@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ty Scales</title>
+    <link>https://tscales.github.io/</link>
+    <description>Recent content on Ty Scales</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 13 Mar 2022 11:02:32 -0700</lastBuildDate><atom:link href="https://tscales.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Practical Use Case for Higher Order Functions</title>
+      <link>https://tscales.github.io/blog/higher-order-functions/</link>
+      <pubDate>Sun, 13 Mar 2022 11:02:32 -0700</pubDate>
+      
+      <guid>https://tscales.github.io/blog/higher-order-functions/</guid>
+      <description>Have you ever encountered this scenario before?
+Lets say you have a class User.
+case class User(firstName: String, lastName: String, address: String) You&amp;rsquo;re using this class in production to store information retrieved from an endpoint. Now imagine you are given a new task where you need to fetch a User from a new endpoint. However, This endpoint does not contain the address field, you&amp;rsquo;ll have to get that field from a second new endpoint.</description>
+    </item>
+    
+  </channel>
+</rss>
