@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writing a Mock Library in Go | Ty Scales</title>
+<meta name="title" content="Writing a Mock Library in Go" />
+<meta name="description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+ a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="Writing a Mock Library in Go" />
+<meta property="og:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+ a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tscales.github.io/blog/writing-a-mock-library/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2023-08-29T13:34:16-07:00" />
+<meta property="article:modified_time" content="2023-08-29T13:34:16-07:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Writing a Mock Library in Go"/>
+<meta name="twitter:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+ a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time."/>
+
+
+
+<meta itemprop="name" content="Writing a Mock Library in Go">
+<meta itemprop="description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+ a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time."><meta itemprop="datePublished" content="2023-08-29T13:34:16-07:00" />
+<meta itemprop="dateModified" content="2023-08-29T13:34:16-07:00" />
+<meta itemprop="wordCount" content="882">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>Writing a Mock Library in Go</h1>
+<p>
+  <i>
+    <time datetime='2023-08-29' pubdate>
+      29 Aug, 2023
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>This post will walk through the core components that make the mock package from <a href="https://github.com/stretchr/testify">Testify</a> work. It consists of 3 parts:</p>
+<ul>
+<li>a <code>mock</code> object that keeps track of expected calls</li>
+<li>a <code>call</code> object that keeps track of expected arguments and return values</li>
+<li>an algorithm to fetch the return values when called.</li>
+</ul>
+<p><code>Mock</code> is a struct with an Array of <code>Calls</code> and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Mock</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ExpectedCalls</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">mutex</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Mutex</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Call</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Parent</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Mock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Method</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Arguments</span> []<span style="color:#66d9ef">interface</span>{}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReturnArguments</span> []<span style="color:#66d9ef">interface</span>{}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>Mock</code> needs the ability to add Calls, and Calls needs the ability to add return values. This is done by defining a method <code>On</code> that takes a method name and a variable number of arguments. A <code>Call</code> is returned, which has its return values set using <code>Return</code>. Finally, Mock can be embedded in any struct that implements an interface to make it a mock, and provide access to creating calls. The basic example looks like this</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> 
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mockAdder</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Mock</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mockAdder</span>) <span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//TODO get the return values from the mock
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mockAdder</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mockAdder</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mockAdder</span>.<span style="color:#a6e22e">On</span>(<span style="color:#e6db74">&#34;AddOne&#34;</span>, <span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">Return</span>(<span style="color:#ae81ff">2</span>)
+</span></span></code></pre></div><p><code>On</code> simply defines a new call and appends it to the expected arguments.
+<code>Return</code>, likewise, sets the <code>ReturnArguments</code> of the Call</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newCall</span>(<span style="color:#a6e22e">parent</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Mock</span>, <span style="color:#a6e22e">methodName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">methodArguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Call</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Parent</span>: <span style="color:#a6e22e">parent</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Method</span>: <span style="color:#a6e22e">methodName</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Arguments</span>: <span style="color:#a6e22e">methodArguments</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ReturnArguments</span>: make([]<span style="color:#66d9ef">interface</span>{},<span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Mock</span>) <span style="color:#a6e22e">On</span>(<span style="color:#a6e22e">methodName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">arguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">Lock</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">mutex</span>.<span style="color:#a6e22e">Unlock</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewCall</span>(<span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">methodName</span>, <span style="color:#a6e22e">arguments</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">ExpectedCalls</span> = append(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">ExpectedCalls</span>, <span style="color:#a6e22e">c</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span>) <span style="color:#a6e22e">Return</span>(<span style="color:#a6e22e">returnArguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">lock</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">unlock</span>()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">ReturnArguments</span> = <span style="color:#a6e22e">returnArguments</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>now we need to actually implement the method of the interface.This is where the majority of our code will be written. To get the arguments from the mock, we need to</p>
+<ul>
+<li>Get the name of the method called</li>
+<li>Match the name against the calls that have been defined</li>
+<li>Match the provided arguments against the calls arguments</li>
+<li>if everything matches, returned the call&rsquo;s <code>ReturnArguments</code> field.</li>
+</ul>
+<p>First, we define a <code>Called</code> Method to take in the arguments and get the name of the function that was called</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// get the name of the method that called this function, 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// search for it in the array of calls in this mock
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Mock</span>) <span style="color:#a6e22e">Called</span>(<span style="color:#a6e22e">arguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) []<span style="color:#66d9ef">interface</span>{} {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pc</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Caller</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>        panic(<span style="color:#e6db74">&#34;Couldn&#39;t get the caller information&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">functionPath</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">FuncForPC</span>(<span style="color:#a6e22e">pc</span>).<span style="color:#a6e22e">Name</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">parts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">functionPath</span>, <span style="color:#e6db74">&#34;.&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">functionName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parts</span>[len(<span style="color:#a6e22e">parts</span>)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">MethodCalled</span>(<span style="color:#a6e22e">functionName</span>, <span style="color:#a6e22e">arguments</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>now we&rsquo;ll need a function to find the expected call, and when we find the call that matches the method name, a function to match the arguments.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Mock</span>) <span style="color:#a6e22e">findExpectedCall</span>(<span style="color:#a6e22e">method</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">arguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">expectedCall</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Call</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">call</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">ExpectedCalls</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">call</span>.<span style="color:#a6e22e">Method</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">method</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">diffCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">argumentDiff</span>(<span style="color:#a6e22e">call</span>.<span style="color:#a6e22e">Arguments</span>, <span style="color:#a6e22e">arguments</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">diffCount</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">expectedCall</span> = <span style="color:#a6e22e">call</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">expectedCall</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>argumentDiff</code> iterates through each argument of the call looking for any differences. With the exception of some special cases, this is mostly done using <code>reflect.DeepEqual</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">argumentDiff</span>(<span style="color:#a6e22e">callArgs</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">arguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">differences</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">maxArgCount</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">callArgs</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">arguments</span>) &gt; <span style="color:#a6e22e">maxArgCount</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">maxArgCount</span> = len(<span style="color:#a6e22e">arguments</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">maxArgCount</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">actual</span>, <span style="color:#a6e22e">expected</span> <span style="color:#66d9ef">interface</span>{}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">arguments</span>) <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">i</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">actual</span> = <span style="color:#e6db74">&#34;(Missing)&#34;</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">actual</span> = <span style="color:#a6e22e">arguments</span>[<span style="color:#a6e22e">i</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">callArgs</span>) <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">i</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">expected</span> = <span style="color:#e6db74">&#34;(Missing)&#34;</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">expected</span> = <span style="color:#a6e22e">callArgs</span>[<span style="color:#a6e22e">i</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">objectsAreEqual</span>(<span style="color:#a6e22e">actual</span>, <span style="color:#a6e22e">expected</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">differences</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>        }     
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">differences</span>
+</span></span><span style="display:flex;"><span>}  
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">objectsAreEqual</span>(<span style="color:#a6e22e">expected</span>, <span style="color:#a6e22e">actual</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span> 	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">exp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">expected</span>.(<span style="color:#66d9ef">type</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> []<span style="color:#66d9ef">byte</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">act</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">actual</span>.([]<span style="color:#66d9ef">byte</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">exp</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">act</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">exp</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">act</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">Equal</span>(<span style="color:#a6e22e">exp</span>, <span style="color:#a6e22e">act</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">DeepEqual</span>(<span style="color:#a6e22e">expected</span>, <span style="color:#a6e22e">actual</span>)  
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>we can now complete the <code>AddOne</code> call of our mock by getting the arguments with <code>Called</code> and returning them.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mockAdder</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Mock</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mockAdder</span>) <span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">args</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">Called</span>(<span style="color:#a6e22e">n</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">args</span>) &lt; <span style="color:#ae81ff">1</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#e6db74">&#34;error: expected 1 return argument for mocked function AddOne&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">args</span>[<span style="color:#ae81ff">0</span>].(<span style="color:#66d9ef">int</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestMock</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">m</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mockAdder</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">On</span>(<span style="color:#e6db74">&#34;AddOne&#34;</span>, <span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">Return</span>(<span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">AddOne</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">res</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected 2, got %d&#34;</span>, <span style="color:#a6e22e">res</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The test passes! from here, you can extend out the <code>argumentDiff</code> function to handle more special cases. For Example, if you want a placeholder that always matches, you could export a constant <code>Anything</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Anything</span> = <span style="color:#e6db74">&#34;mock.Anything&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ArgumentDiff</span>(<span style="color:#a6e22e">callArgs</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">arguments</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">maxArgCount</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">objectsAreEqual</span>(<span style="color:#a6e22e">actual</span>, <span style="color:#a6e22e">expected</span>) <span style="color:#f92672">&amp;&amp;</span> !<span style="color:#a6e22e">objectsAreEqual</span>(<span style="color:#a6e22e">expected</span>, <span style="color:#a6e22e">Anything</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">differences</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>        }     
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Now we can accept any value for a mock and get a passing test. This is especially useful for functions that take in a context that don&rsquo;t need exact matches.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> 
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mockAdder</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Mock</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestMock</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">m</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mockAdder</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">On</span>(<span style="color:#e6db74">&#34;AddOne&#34;</span>, <span style="color:#a6e22e">mock</span>.<span style="color:#a6e22e">Anything</span>, <span style="color:#ae81ff">1</span>).<span style="color:#a6e22e">Return</span>(<span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">AddOne</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">res</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected 2, got %d&#34;</span>, <span style="color:#a6e22e">res</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The full code is available on <a href="https://github.com/tscales/methodMock">Github</a></p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
