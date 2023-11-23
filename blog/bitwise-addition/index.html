@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bitwise Addition | Ty Scales</title>
+<meta name="title" content="Bitwise Addition" />
+<meta name="description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+Let&rsquo;s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$" />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="Bitwise Addition" />
+<meta property="og:description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+Let&rsquo;s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://tscales.github.io/blog/bitwise-addition/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2023-11-21T20:32:41-08:00" />
+<meta property="article:modified_time" content="2023-11-21T20:32:41-08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Bitwise Addition"/>
+<meta name="twitter:description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+Let&rsquo;s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$"/>
+
+
+
+<meta itemprop="name" content="Bitwise Addition">
+<meta itemprop="description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+Let&rsquo;s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$"><meta itemprop="datePublished" content="2023-11-21T20:32:41-08:00" />
+<meta itemprop="dateModified" content="2023-11-21T20:32:41-08:00" />
+<meta itemprop="wordCount" content="492">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Bitwise Addition</h1>
+<p>
+  <i>
+    <time datetime='2023-11-21' pubdate>
+      21 Nov, 2023
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Here is a function that can add two numbers using bitwise operators.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>, (<span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to <em>rewrite</em> a mathematical expression.</p>
+<p>Let&rsquo;s show this concretely with two numbers.</p>
+<p>Let a = 5 as the expression $2^2 + 2^0$<br>
+Let b = 7 as the expression $2^2 + 2^1 + 2^0$<br>
+Let the sum of 5 and 7 be represented the expression
+$2^2 + 2^2 + 2^1 + 2^0 + 2^0$</p>
+<p>How can this expression be simplified? Whenever we encounter two exponents raised to the same power, rewrite the expression such that $2^n + 2^n = 2^{(n+1)}$.</p>
+<p>How do we represent that as code? We need the terms that appear in both <code>a</code> AND <code>b</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create a new expression that represents the like terms of both a and b
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+</span></span></code></pre></div><p>The like terms between <code>a</code> and <code>b</code> are $2^2$ and $2^0$. The new expression <code>likeTerms</code> represents $2^2 + 2^0$ and we want to turn that in to $2^3 + 2^1$. There&rsquo;s a bitwise operator for that. It&rsquo;s the bitwise SHIFT operator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// for each exponent in likeTerms, shift 2^n to 2^(n + 1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
+</span></span></code></pre></div><p><code>newExpressionB</code> represents $2^3 + 2^1$ and can now be added to the remaining terms from <code>a</code> and <code>b</code> that were not merged together. In this case, $2^1$ from expression <code>b</code> is the only one exclusive to either expression. How do we extract it from the original expressions? We create a new expression <code>uniqueTerms</code> that contains the exponents <em>exclusive</em> to <code>a</code> and <em>exclusive</em> to <code>b</code>. There&rsquo;s a bitwise operator for that. Its the XOR operator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create and expression of the terms that were exclusive to a and b, the terms that didn&#39;t get rewritten in to newExpressionB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
+</span></span></code></pre></div><p>we now have two new expressions. <code>newExpressionB</code> representing $2^3 + 2^1$ and <code>uniqueTerms</code> representing $2^1$ that we need to add together. We have a function for that. It&rsquo;s the <code>bitwise_add</code> function that we&rsquo;ve been crafting this entire time! Keep passing the new expressions recursively, until <code>a</code> consists of all unique terms and <code>b</code> is zero. At that point, we have obtained the answer.</p>
+<p>Here are the remaining steps.<br>
+Rewrite $2^3 + 2^1 + 2^1$ as $2^3 + 2^2$<br>
+All terms are unique: $7 + 5 = 2^3 + 2^2 = 12$</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the unique terms(bits) between a and b
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the like terms(bits) between a and b
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// for each like term, shift exponent from 2^n to 2^(n + 1)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call bitwise_add until there are no like terms, return a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">uniqueTerms</span>, <span style="color:#a6e22e">newExpressionB</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[','\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+</script>
+</footer>
+
+    
+</body>
+
+</html>

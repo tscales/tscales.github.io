@@ -6,7 +6,19 @@
     <description>Recent content in Blog on Ty Scales</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 29 Aug 2023 13:34:16 -0700</lastBuildDate><atom:link href="https://tscales.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 21 Nov 2023 20:32:41 -0800</lastBuildDate><atom:link href="https://tscales.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bitwise Addition</title>
+      <link>https://tscales.github.io/blog/bitwise-addition/</link>
+      <pubDate>Tue, 21 Nov 2023 20:32:41 -0800</pubDate>
+      
+      <guid>https://tscales.github.io/blog/bitwise-addition/</guid>
+      <description>Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;amp;b) &amp;lt;&amp;lt; 1) } Why does this work? It&amp;rsquo;s helpful to look at this function not as performing &amp;ldquo;addition&amp;rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+Let&amp;rsquo;s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 + 2^0$</description>
+    </item>
+    
     <item>
       <title>Writing a Mock Library in Go</title>
       <link>https://tscales.github.io/blog/writing-a-mock-library/</link>
