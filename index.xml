@@ -4,41 +4,37 @@
     <title>Ty Scales</title>
     <link>https://tscales.github.io/</link>
     <description>Recent content on Ty Scales</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Nov 2023 20:32:41 -0800</lastBuildDate><atom:link href="https://tscales.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 17 Sep 2024 19:42:30 -0700</lastBuildDate>
+    <atom:link href="https://tscales.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Latin</title>
+      <link>https://tscales.github.io/blog/latin/</link>
+      <pubDate>Tue, 17 Sep 2024 19:42:30 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/latin/</guid>
+      <description>&lt;p&gt;This page explores latin texts, primarily those with no English translation.&lt;/p&gt;&#xA;&lt;h3 id=&#34;1600s&#34;&gt;1600s&lt;/h3&gt;&#xA;&lt;p&gt;&lt;a href=&#34;illyricum-sacrum&#34;&gt;Illyricum Sacrum&lt;/a&gt;: an 8 volume work on the history of church in former Roman province of Illyricum.&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;Imperatorum Romanorum Numismata&lt;/em&gt;, Francesco Maria Mezzabarba&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;Carniola antiqua et nova&lt;/em&gt;, Ludwig Schönleben&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;De Regno Dalmatiae et Croatiae&lt;/em&gt;, Johannes Lucius&lt;/p&gt;&#xA;&lt;h3 id=&#34;1200s&#34;&gt;1200s&lt;/h3&gt;&#xA;&lt;p&gt;&lt;em&gt;Historia Salonitana&lt;/em&gt;, Thomas the Archdeacon&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Bitwise Addition</title>
       <link>https://tscales.github.io/blog/bitwise-addition/</link>
       <pubDate>Tue, 21 Nov 2023 20:32:41 -0800</pubDate>
-      
       <guid>https://tscales.github.io/blog/bitwise-addition/</guid>
-      <description>Here is a function that can add two numbers using bitwise operators.
-func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;amp;b) &amp;lt;&amp;lt; 1) } Why does this work? It&amp;rsquo;s helpful to look at this function not as performing &amp;ldquo;addition&amp;rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
-Let&amp;rsquo;s show this concretely with two numbers.
-Let a = 5 as the expression $2^2 + 2^0$</description>
+      <description>&lt;p&gt;Here is a function that can add two numbers using bitwise operators.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-Go&#34; data-lang=&#34;Go&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;func&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bitwise_add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; {&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;bitwise_add&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;^&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;, (&lt;span style=&#34;color:#a6e22e&#34;&gt;a&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;b&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Why does this work? It&amp;rsquo;s helpful to look at this function not as performing &amp;ldquo;addition&amp;rdquo;, but in using the bitwise operators to &lt;em&gt;rewrite&lt;/em&gt; a mathematical expression.&lt;/p&gt;&#xA;&lt;p&gt;Let&amp;rsquo;s show this concretely with two numbers.&lt;/p&gt;&#xA;&lt;p&gt;Let a = 5 as the expression $2^2 + 2^0$&lt;br&gt;&#xA;Let b = 7 as the expression $2^2 + 2^1 + 2^0$&lt;br&gt;&#xA;Let the sum of 5 and 7 be represented the expression&#xA;$2^2 + 2^2 + 2^1 + 2^0 + 2^0$&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Writing a Mock Library in Go</title>
       <link>https://tscales.github.io/blog/writing-a-mock-library/</link>
       <pubDate>Tue, 29 Aug 2023 13:34:16 -0700</pubDate>
-      
       <guid>https://tscales.github.io/blog/writing-a-mock-library/</guid>
-      <description>This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
- a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.</description>
+      <description>&lt;p&gt;This post will walk through the core components that make the mock package from &lt;a href=&#34;https://github.com/stretchr/testify&#34;&gt;Testify&lt;/a&gt; work. It consists of 3 parts:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;a &lt;code&gt;mock&lt;/code&gt; object that keeps track of expected calls&lt;/li&gt;&#xA;&lt;li&gt;a &lt;code&gt;call&lt;/code&gt; object that keeps track of expected arguments and return values&lt;/li&gt;&#xA;&lt;li&gt;an algorithm to fetch the return values when called.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&lt;code&gt;Mock&lt;/code&gt; is a struct with an Array of &lt;code&gt;Calls&lt;/code&gt; and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>A Practical Use Case for Higher Order Functions</title>
       <link>https://tscales.github.io/blog/higher-order-functions/</link>
       <pubDate>Sun, 13 Mar 2022 11:02:32 -0700</pubDate>
-      
       <guid>https://tscales.github.io/blog/higher-order-functions/</guid>
-      <description>Have you ever encountered this scenario before?
-Lets say you have a class User.
-case class User(firstName: String, lastName: String, address: String) You&amp;rsquo;re using this class in production to store information retrieved from an endpoint. Now imagine you are given a new task where you need to fetch a User from a new endpoint. However, This endpoint does not contain the address field, you&amp;rsquo;ll have to get that field from a second new endpoint.</description>
+      <description>&lt;p&gt;Have you ever encountered this scenario before?&lt;/p&gt;&#xA;&lt;p&gt;Lets say you have a class &lt;code&gt;User&lt;/code&gt;.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-scala&#34; data-lang=&#34;scala&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;firstName&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; lastName&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; address&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You&amp;rsquo;re using this class in production to store information retrieved from an endpoint. Now imagine you are given a new task where you need to fetch a User from a new endpoint. However, This endpoint &lt;em&gt;does not contain the address field&lt;/em&gt;, you&amp;rsquo;ll have to get that field from a second new endpoint. What do you do?&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

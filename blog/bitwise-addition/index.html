@@ -8,42 +8,61 @@
 <title>Bitwise Addition | Ty Scales</title>
 <meta name="title" content="Bitwise Addition" />
 <meta name="description" content="Here is a function that can add two numbers using bitwise operators.
-func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
+func bitwise_add(a, b int) int {
+    if b == 0 {
+        return a
+    }
+    return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1)
+}
+Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
 Let&rsquo;s show this concretely with two numbers.
-Let a = 5 as the expression $2^2 &#43; 2^0$" />
+Let a = 5 as the expression $2^2 &#43; 2^0$
+Let b = 7 as the expression $2^2 &#43; 2^1 &#43; 2^0$
+Let the sum of 5 and 7 be represented the expression
+$2^2 &#43; 2^2 &#43; 2^1 &#43; 2^0 &#43; 2^0$" />
 <meta name="keywords" content="" />
 
 
-<meta property="og:title" content="Bitwise Addition" />
-<meta property="og:description" content="Here is a function that can add two numbers using bitwise operators.
-func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
-Let&rsquo;s show this concretely with two numbers.
-Let a = 5 as the expression $2^2 &#43; 2^0$" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://tscales.github.io/blog/bitwise-addition/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2023-11-21T20:32:41-08:00" />
-<meta property="article:modified_time" content="2023-11-21T20:32:41-08:00" />
+<meta property="og:url" content="https://tscales.github.io/blog/bitwise-addition/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Bitwise Addition">
+  <meta property="og:description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int { if b == 0 { return a } return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It’s helpful to look at this function not as performing “addition”, but in using the bitwise operators to rewrite a mathematical expression.
+Let’s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$
+Let b = 7 as the expression $2^2 &#43; 2^1 &#43; 2^0$
+Let the sum of 5 and 7 be represented the expression $2^2 &#43; 2^2 &#43; 2^1 &#43; 2^0 &#43; 2^0$">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2023-11-21T20:32:41-08:00">
+    <meta property="article:modified_time" content="2023-11-21T20:32:41-08:00">
 
 
 
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Bitwise Addition"/>
-<meta name="twitter:description" content="Here is a function that can add two numbers using bitwise operators.
-func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
-Let&rsquo;s show this concretely with two numbers.
-Let a = 5 as the expression $2^2 &#43; 2^0$"/>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Bitwise Addition">
+  <meta name="twitter:description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int { if b == 0 { return a } return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It’s helpful to look at this function not as performing “addition”, but in using the bitwise operators to rewrite a mathematical expression.
+Let’s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$
+Let b = 7 as the expression $2^2 &#43; 2^1 &#43; 2^0$
+Let the sum of 5 and 7 be represented the expression $2^2 &#43; 2^2 &#43; 2^1 &#43; 2^0 &#43; 2^0$">
 
 
 
-<meta itemprop="name" content="Bitwise Addition">
-<meta itemprop="description" content="Here is a function that can add two numbers using bitwise operators.
-func bitwise_add(a, b int) int {  if b == 0 {  return a  }  return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It&rsquo;s helpful to look at this function not as performing &ldquo;addition&rdquo;, but in using the bitwise operators to rewrite a mathematical expression.
-Let&rsquo;s show this concretely with two numbers.
-Let a = 5 as the expression $2^2 &#43; 2^0$"><meta itemprop="datePublished" content="2023-11-21T20:32:41-08:00" />
-<meta itemprop="dateModified" content="2023-11-21T20:32:41-08:00" />
-<meta itemprop="wordCount" content="492">
-<meta itemprop="keywords" content="" />
+
+  <meta itemprop="name" content="Bitwise Addition">
+  <meta itemprop="description" content="Here is a function that can add two numbers using bitwise operators.
+func bitwise_add(a, b int) int { if b == 0 { return a } return bitwise_add(a^b, (a&amp;b) &lt;&lt; 1) } Why does this work? It’s helpful to look at this function not as performing “addition”, but in using the bitwise operators to rewrite a mathematical expression.
+Let’s show this concretely with two numbers.
+Let a = 5 as the expression $2^2 &#43; 2^0$
+Let b = 7 as the expression $2^2 &#43; 2^1 &#43; 2^0$
+Let the sum of 5 and 7 be represented the expression $2^2 &#43; 2^2 &#43; 2^1 &#43; 2^0 &#43; 2^0$">
+  <meta itemprop="datePublished" content="2023-11-21T20:32:41-08:00">
+  <meta itemprop="dateModified" content="2023-11-21T20:32:41-08:00">
+  <meta itemprop="wordCount" content="492">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <style>

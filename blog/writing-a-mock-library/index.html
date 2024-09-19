@@ -8,34 +8,43 @@
 <title>Writing a Mock Library in Go | Ty Scales</title>
 <meta name="title" content="Writing a Mock Library in Go" />
 <meta name="description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
- a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time." />
+
+a mock object that keeps track of expected calls
+a call object that keeps track of expected arguments and return values
+an algorithm to fetch the return values when called.
+
+Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time." />
 <meta name="keywords" content="" />
 
 
-<meta property="og:title" content="Writing a Mock Library in Go" />
-<meta property="og:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
- a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time." />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://tscales.github.io/blog/writing-a-mock-library/" /><meta property="article:section" content="blog" />
-<meta property="article:published_time" content="2023-08-29T13:34:16-07:00" />
-<meta property="article:modified_time" content="2023-08-29T13:34:16-07:00" />
+<meta property="og:url" content="https://tscales.github.io/blog/writing-a-mock-library/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Writing a Mock Library in Go">
+  <meta property="og:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called. Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2023-08-29T13:34:16-07:00">
+    <meta property="article:modified_time" content="2023-08-29T13:34:16-07:00">
 
 
 
 
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Writing a Mock Library in Go"/>
-<meta name="twitter:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
- a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time."/>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Writing a Mock Library in Go">
+  <meta name="twitter:description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called. Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.">
 
 
 
-<meta itemprop="name" content="Writing a Mock Library in Go">
-<meta itemprop="description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
- a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called.  Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time."><meta itemprop="datePublished" content="2023-08-29T13:34:16-07:00" />
-<meta itemprop="dateModified" content="2023-08-29T13:34:16-07:00" />
-<meta itemprop="wordCount" content="882">
-<meta itemprop="keywords" content="" />
+
+  <meta itemprop="name" content="Writing a Mock Library in Go">
+  <meta itemprop="description" content="This post will walk through the core components that make the mock package from Testify work. It consists of 3 parts:
+a mock object that keeps track of expected calls a call object that keeps track of expected arguments and return values an algorithm to fetch the return values when called. Mock is a struct with an Array of Calls and a mutual exclusion lock to ensure only one goroutine accesses the resource at a time.">
+  <meta itemprop="datePublished" content="2023-08-29T13:34:16-07:00">
+  <meta itemprop="dateModified" content="2023-08-29T13:34:16-07:00">
+  <meta itemprop="wordCount" content="882">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <style>

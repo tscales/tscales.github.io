@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>functional-programming on Ty Scales</title>
+    <title>Functional-Programming on Ty Scales</title>
     <link>https://tscales.github.io/tags/functional-programming/</link>
-    <description>Recent content in functional-programming on Ty Scales</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Functional-Programming on Ty Scales</description>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 13 Mar 2022 11:02:32 -0700</lastBuildDate><atom:link href="https://tscales.github.io/tags/functional-programming/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 13 Mar 2022 11:02:32 -0700</lastBuildDate>
+    <atom:link href="https://tscales.github.io/tags/functional-programming/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A Practical Use Case for Higher Order Functions</title>
       <link>https://tscales.github.io/blog/higher-order-functions/</link>
       <pubDate>Sun, 13 Mar 2022 11:02:32 -0700</pubDate>
-      
       <guid>https://tscales.github.io/blog/higher-order-functions/</guid>
-      <description>Have you ever encountered this scenario before?
-Lets say you have a class User.
-case class User(firstName: String, lastName: String, address: String) You&amp;rsquo;re using this class in production to store information retrieved from an endpoint. Now imagine you are given a new task where you need to fetch a User from a new endpoint. However, This endpoint does not contain the address field, you&amp;rsquo;ll have to get that field from a second new endpoint.</description>
+      <description>&lt;p&gt;Have you ever encountered this scenario before?&lt;/p&gt;&#xA;&lt;p&gt;Lets say you have a class &lt;code&gt;User&lt;/code&gt;.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-scala&#34; data-lang=&#34;scala&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;case&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;User&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;firstName&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; lastName&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;,&lt;/span&gt; address&lt;span style=&#34;color:#66d9ef&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;String&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You&amp;rsquo;re using this class in production to store information retrieved from an endpoint. Now imagine you are given a new task where you need to fetch a User from a new endpoint. However, This endpoint &lt;em&gt;does not contain the address field&lt;/em&gt;, you&amp;rsquo;ll have to get that field from a second new endpoint. What do you do?&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>
