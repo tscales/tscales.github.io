@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Latin on Ty Scales</title>
+    <link>http://localhost:1313/blog/latin/</link>
+    <description>Recent content in Latin on Ty Scales</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 17 Sep 2024 19:42:30 -0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/blog/latin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Illyricum Sacrum</title>
+      <link>http://localhost:1313/blog/latin/illyricum-sacrum/</link>
+      <pubDate>Tue, 17 Sep 2024 19:42:30 -0700</pubDate>
+      <guid>http://localhost:1313/blog/latin/illyricum-sacrum/</guid>
+      <description>&lt;p&gt;&lt;em&gt;Illyricum Sacrum&lt;/em&gt; is the result of a lifelong effort by the Italian priest Filippo Riceputi to document as many sources on the history of the church in the Balkan region and former Roman province of Illyricum. It spans 8 volumes which were compiled and published after his death by Daniele Farlati.&lt;/p&gt;&#xA;&lt;h2 id=&#34;volume-1&#34;&gt;Volume 1&lt;/h2&gt;&#xA;&lt;p&gt;Volume 1 focuses on the historical region of Illyricum, followed by a history of the church at Salona. A former Dalmatian city that was located in what is today Southern Croatia, near Solin.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
