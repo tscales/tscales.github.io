@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XML in Go | Ty Scales</title>
+<meta name="title" content="XML in Go" />
+<meta name="description" content="Decoding
+In this section we&rsquo;ll examine the rules of the xml decoder and provide examples for each.
+1. If the struct has a field type []byte or string with tag &ldquo;,innerxml&rdquo;, Unmarshal accumulates the raw XML nested inside in that field. The rest of the rules still apply.
+x := `&lt;address&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    Contents string `xml:&#34;,innerxml&#34;`
+}
+var addr Volume
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(addr.Contents)
+//  &lt;street&gt;123 Main St&lt;/street&gt;
+2. If the struct has a field named XMLName of type Name, Unmarshal records the element name in that field.
+x := `&lt;address&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    XMLName xml.Name
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf(&#34;%&#43;v&#34;, addr.XMLName.Local)
+// address
+3. If the XMLName field has an associated tag of the form &ldquo;name&rdquo; or &ldquo;namespace-URL name&rdquo;, the XML element must have the given name (and, optionally, name space) or else Unmarshal returns an error.
+x := `&lt;address&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    XMLName xml.Name `xml:&#34;city&#34;`
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+    //expected element type &lt;city&gt; but have &lt;address&gt;
+}
+4. If the XML element has an attribute whose name matches a struct field name with an associated tag containing &ldquo;,attr&rdquo; or the explicit name in a struct field tag of the form &ldquo;name,attr&rdquo;, Unmarshal records the attribute value in that field.
+x := `&lt;address id=&#34;999&#34;&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    Id string `xml:&#34;id,attr&#34;`
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(addr.Id)
+//999
+5. If the XML element has an attribute not handled by the previous rule and the struct has a field with an associated tag containing &ldquo;,any,attr&rdquo;, Unmarshal records the attribute value in the first such field.
+x := `&lt;address id=&#34;999&#34; span=&#34;888&#34;&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    Id        string `xml:&#34;id,attr&#34;`
+    OtherAttr string `xml:&#34;,any,attr&#34;`
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf(&#34;%&#43;v&#34;, addr)
+// {Id:999, OtherAttr:888}
+6. If the XML element contains character data, that data is accumulated in the first struct field that has tag &ldquo;,chardata&rdquo;. The struct field may have type []byte or string. If there is no such field, the character data is discarded.
+x := `&lt;address&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    Street struct {
+        Text string `xml:&#34;,chardata&#34;`
+    } `xml:&#34;street&#34;`
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(addr.Street.Text)
+7. If the XML element contains comments, they are accumulated in the first struct field that has tag &ldquo;,comment&rdquo;. The struct field may have type []byte or string. If there is no such field, the comments are discarded.
+x := `&lt;address&gt;
+        &lt;!-- an xml comment --&gt;
+        &lt;street&gt;123 Main St&lt;/street&gt;
+    &lt;/address&gt;`
+
+type Address struct {
+    Comment string `xml:&#34;,comment&#34;`
+}
+var addr Address
+err := xml.Unmarshal([]byte(x), &amp;addr)
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(addr.Comment)
+// an xml comment
+8. If the XML element contains a sub-element whose name matches the prefix of a tag formatted as &ldquo;a&rdquo; or &ldquo;a&gt;b&gt;c&rdquo;, unmarshal will descend into the XML structure looking for elements with the given names, and will map the innermost elements to that struct field. A tag starting with &ldquo;&gt;&rdquo; is equivalent to one starting with the field name followed by &ldquo;&gt;&rdquo;.
+This one is worth dividing in to several examples: The most basic is when a sub-element name that matches a tag." />
+<meta name="keywords" content="golang," />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/xml-in-go/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="XML in Go">
+  <meta property="og:description" content="Decoding In this section we’ll examine the rules of the xml decoder and provide examples for each.
+1. If the struct has a field type []byte or string with tag “,innerxml”, Unmarshal accumulates the raw XML nested inside in that field. The rest of the rules still apply. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Contents string `xml:&#34;,innerxml&#34;` } var addr Volume err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Contents) // &lt;street&gt;123 Main St&lt;/street&gt; 2. If the struct has a field named XMLName of type Name, Unmarshal records the element name in that field. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr.XMLName.Local) // address 3. If the XMLName field has an associated tag of the form “name” or “namespace-URL name”, the XML element must have the given name (and, optionally, name space) or else Unmarshal returns an error. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name `xml:&#34;city&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) //expected element type &lt;city&gt; but have &lt;address&gt; } 4. If the XML element has an attribute whose name matches a struct field name with an associated tag containing “,attr” or the explicit name in a struct field tag of the form “name,attr”, Unmarshal records the attribute value in that field. x := `&lt;address id=&#34;999&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Id) //999 5. If the XML element has an attribute not handled by the previous rule and the struct has a field with an associated tag containing “,any,attr”, Unmarshal records the attribute value in the first such field. x := `&lt;address id=&#34;999&#34; span=&#34;888&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` OtherAttr string `xml:&#34;,any,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr) // {Id:999, OtherAttr:888} 6. If the XML element contains character data, that data is accumulated in the first struct field that has tag “,chardata”. The struct field may have type []byte or string. If there is no such field, the character data is discarded. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Street struct { Text string `xml:&#34;,chardata&#34;` } `xml:&#34;street&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Street.Text) 7. If the XML element contains comments, they are accumulated in the first struct field that has tag “,comment”. The struct field may have type []byte or string. If there is no such field, the comments are discarded. x := `&lt;address&gt; &lt;!-- an xml comment --&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Comment string `xml:&#34;,comment&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Comment) // an xml comment 8. If the XML element contains a sub-element whose name matches the prefix of a tag formatted as “a” or “a&gt;b&gt;c”, unmarshal will descend into the XML structure looking for elements with the given names, and will map the innermost elements to that struct field. A tag starting with “&gt;” is equivalent to one starting with the field name followed by “&gt;”. This one is worth dividing in to several examples: The most basic is when a sub-element name that matches a tag.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-02-12T15:30:37-08:00">
+    <meta property="article:modified_time" content="2025-02-12T15:30:37-08:00">
+    <meta property="article:tag" content="Golang">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="XML in Go">
+  <meta name="twitter:description" content="Decoding In this section we’ll examine the rules of the xml decoder and provide examples for each.
+1. If the struct has a field type []byte or string with tag “,innerxml”, Unmarshal accumulates the raw XML nested inside in that field. The rest of the rules still apply. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Contents string `xml:&#34;,innerxml&#34;` } var addr Volume err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Contents) // &lt;street&gt;123 Main St&lt;/street&gt; 2. If the struct has a field named XMLName of type Name, Unmarshal records the element name in that field. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr.XMLName.Local) // address 3. If the XMLName field has an associated tag of the form “name” or “namespace-URL name”, the XML element must have the given name (and, optionally, name space) or else Unmarshal returns an error. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name `xml:&#34;city&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) //expected element type &lt;city&gt; but have &lt;address&gt; } 4. If the XML element has an attribute whose name matches a struct field name with an associated tag containing “,attr” or the explicit name in a struct field tag of the form “name,attr”, Unmarshal records the attribute value in that field. x := `&lt;address id=&#34;999&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Id) //999 5. If the XML element has an attribute not handled by the previous rule and the struct has a field with an associated tag containing “,any,attr”, Unmarshal records the attribute value in the first such field. x := `&lt;address id=&#34;999&#34; span=&#34;888&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` OtherAttr string `xml:&#34;,any,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr) // {Id:999, OtherAttr:888} 6. If the XML element contains character data, that data is accumulated in the first struct field that has tag “,chardata”. The struct field may have type []byte or string. If there is no such field, the character data is discarded. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Street struct { Text string `xml:&#34;,chardata&#34;` } `xml:&#34;street&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Street.Text) 7. If the XML element contains comments, they are accumulated in the first struct field that has tag “,comment”. The struct field may have type []byte or string. If there is no such field, the comments are discarded. x := `&lt;address&gt; &lt;!-- an xml comment --&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Comment string `xml:&#34;,comment&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Comment) // an xml comment 8. If the XML element contains a sub-element whose name matches the prefix of a tag formatted as “a” or “a&gt;b&gt;c”, unmarshal will descend into the XML structure looking for elements with the given names, and will map the innermost elements to that struct field. A tag starting with “&gt;” is equivalent to one starting with the field name followed by “&gt;”. This one is worth dividing in to several examples: The most basic is when a sub-element name that matches a tag.">
+
+
+
+
+  <meta itemprop="name" content="XML in Go">
+  <meta itemprop="description" content="Decoding In this section we’ll examine the rules of the xml decoder and provide examples for each.
+1. If the struct has a field type []byte or string with tag “,innerxml”, Unmarshal accumulates the raw XML nested inside in that field. The rest of the rules still apply. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Contents string `xml:&#34;,innerxml&#34;` } var addr Volume err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Contents) // &lt;street&gt;123 Main St&lt;/street&gt; 2. If the struct has a field named XMLName of type Name, Unmarshal records the element name in that field. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr.XMLName.Local) // address 3. If the XMLName field has an associated tag of the form “name” or “namespace-URL name”, the XML element must have the given name (and, optionally, name space) or else Unmarshal returns an error. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { XMLName xml.Name `xml:&#34;city&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) //expected element type &lt;city&gt; but have &lt;address&gt; } 4. If the XML element has an attribute whose name matches a struct field name with an associated tag containing “,attr” or the explicit name in a struct field tag of the form “name,attr”, Unmarshal records the attribute value in that field. x := `&lt;address id=&#34;999&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Id) //999 5. If the XML element has an attribute not handled by the previous rule and the struct has a field with an associated tag containing “,any,attr”, Unmarshal records the attribute value in the first such field. x := `&lt;address id=&#34;999&#34; span=&#34;888&#34;&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Id string `xml:&#34;id,attr&#34;` OtherAttr string `xml:&#34;,any,attr&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Printf(&#34;%&#43;v&#34;, addr) // {Id:999, OtherAttr:888} 6. If the XML element contains character data, that data is accumulated in the first struct field that has tag “,chardata”. The struct field may have type []byte or string. If there is no such field, the character data is discarded. x := `&lt;address&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Street struct { Text string `xml:&#34;,chardata&#34;` } `xml:&#34;street&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Street.Text) 7. If the XML element contains comments, they are accumulated in the first struct field that has tag “,comment”. The struct field may have type []byte or string. If there is no such field, the comments are discarded. x := `&lt;address&gt; &lt;!-- an xml comment --&gt; &lt;street&gt;123 Main St&lt;/street&gt; &lt;/address&gt;` type Address struct { Comment string `xml:&#34;,comment&#34;` } var addr Address err := xml.Unmarshal([]byte(x), &amp;addr) if err != nil { log.Fatal(err) } fmt.Println(addr.Comment) // an xml comment 8. If the XML element contains a sub-element whose name matches the prefix of a tag formatted as “a” or “a&gt;b&gt;c”, unmarshal will descend into the XML structure looking for elements with the given names, and will map the innermost elements to that struct field. A tag starting with “&gt;” is equivalent to one starting with the field name followed by “&gt;”. This one is worth dividing in to several examples: The most basic is when a sub-element name that matches a tag.">
+  <meta itemprop="datePublished" content="2025-02-12T15:30:37-08:00">
+  <meta itemprop="dateModified" content="2025-02-12T15:30:37-08:00">
+  <meta itemprop="wordCount" content="1203">
+  <meta itemprop="keywords" content="Golang">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>XML in Go</h1>
+<p>
+  <i>
+    <time datetime='2025-02-12' pubdate>
+      12 Feb, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <h3 id="decoding">Decoding</h3>
+<p>In this section we&rsquo;ll examine the rules of the xml decoder and provide examples for each.</p>
+<h5 id="1-if-the-struct-has-a-field-type-byte-or-string-with-tag-innerxml-unmarshal-accumulates-the-raw-xml-nested-inside-in-that-field-the-rest-of-the-rules-still-apply">1. If the struct has a field type []byte or string with tag &ldquo;,innerxml&rdquo;, Unmarshal accumulates the raw XML nested inside in that field. The rest of the rules still apply.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Contents</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;,innerxml&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Volume</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Contents</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//  &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span></code></pre></div><h5 id="2-if-the-struct-has-a-field-named-xmlname-of-type-name-unmarshal-records-the-element-name-in-that-field">2. If the struct has a field named XMLName of type Name, Unmarshal records the element name in that field.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">XMLName</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Name</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">XMLName</span>.<span style="color:#a6e22e">Local</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// address
+</span></span></span></code></pre></div><h5 id="3-if-the-xmlname-field-has-an-associated-tag-of-the-form-name-or-namespace-url-name-the-xml-element-must-have-the-given-name-and-optionally-name-space-or-else-unmarshal-returns-an-error">3. If the XMLName field has an associated tag of the form &ldquo;name&rdquo; or &ldquo;namespace-URL name&rdquo;, the XML element must have the given name (and, optionally, name space) or else Unmarshal returns an error.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">XMLName</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Name</span> <span style="color:#e6db74">`xml:&#34;city&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//expected element type &lt;city&gt; but have &lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><h5 id="4-if-the-xml-element-has-an-attribute-whose-name-matches-a-struct-field-name-with-an-associated-tag-containing-attr-or-the-explicit-name-in-a-struct-field-tag-of-the-form-nameattr-unmarshal-records-the-attribute-value-in-that-field">4. If the XML element has an attribute whose name matches a struct field name with an associated tag containing &ldquo;,attr&rdquo; or the explicit name in a struct field tag of the form &ldquo;name,attr&rdquo;, Unmarshal records the attribute value in that field.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address id=&#34;999&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Id</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;id,attr&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Id</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//999
+</span></span></span></code></pre></div><h5 id="5-if-the-xml-element-has-an-attribute-not-handled-by-the-previous-rule-and-the-struct-has-a-field-with-an-associated-tag-containing-anyattr-unmarshal-records-the-attribute-value-in-the-first-such-field">5. If the XML element has an attribute not handled by the previous rule and the struct has a field with an associated tag containing &ldquo;,any,attr&rdquo;, Unmarshal records the attribute value in the first such field.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address id=&#34;999&#34; span=&#34;888&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Id</span>        <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;id,attr&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">OtherAttr</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;,any,attr&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// {Id:999, OtherAttr:888}
+</span></span></span></code></pre></div><h5 id="6-if-the-xml-element-contains-character-data-that-data-is-accumulated-in-the-first-struct-field-that-has-tag-chardata-the-struct-field-may-have-type-byte-or-string-if-there-is-no-such-field-the-character-data-is-discarded">6. If the XML element contains character data, that data is accumulated in the first struct field that has tag &ldquo;,chardata&rdquo;. The struct field may have type []byte or string. If there is no such field, the character data is discarded.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Text</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;,chardata&#34;`</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#e6db74">`xml:&#34;street&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Street</span>.<span style="color:#a6e22e">Text</span>)
+</span></span></code></pre></div><h5 id="7-if-the-xml-element-contains-comments-they-are-accumulated-in-the-first-struct-field-that-has-tag-comment-the-struct-field-may-have-type-byte-or-string-if-there-is-no-such-field-the-comments-are-discarded">7. If the XML element contains comments, they are accumulated in the first struct field that has tag &ldquo;,comment&rdquo;. The struct field may have type []byte or string. If there is no such field, the comments are discarded.</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;!-- an xml comment --&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Comment</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;,comment&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Comment</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// an xml comment
+</span></span></span></code></pre></div><h5 id="8-if-the-xml-element-contains-a-sub-element-whose-name-matches-the-prefix-of-a-tag-formatted-as-a-or-abc-unmarshal-will-descend-into-the-xml-structure-looking-for-elements-with-the-given-names-and-will-map-the-innermost-elements-to-that-struct-field-a-tag-starting-with--is-equivalent-to-one-starting-with-the-field-name-followed-by-">8. If the XML element contains a sub-element whose name matches the prefix of a tag formatted as &ldquo;a&rdquo; or &ldquo;a&gt;b&gt;c&rdquo;, unmarshal will descend into the XML structure looking for elements with the given names, and will map the innermost elements to that struct field. A tag starting with &ldquo;&gt;&rdquo; is equivalent to one starting with the field name followed by &ldquo;&gt;&rdquo;.</h5>
+<p>This one is worth dividing in to several examples: The most basic is when a sub-element name that matches a tag.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;street&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Street</span>)
+</span></span></code></pre></div><p>Now let&rsquo;s see how we can deal with deeper nestings.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;address&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;street&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;value&gt;</span> 123 Main St<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/street&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/address&gt;</span>
+</span></span></code></pre></div><p>Option 1 is to follow the rules we have alrady seen and use a struct.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;value&gt; 123 Main St&lt;/value&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Value</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;value&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#a6e22e">Street</span> <span style="color:#e6db74">`xml:&#34;street&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Street</span>)
+</span></span></code></pre></div><p>Option 2 is to is to descend the xml using <code>&gt;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;value&gt;123 Main St&lt;/value&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;street&gt;value&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Street</span>)
+</span></span></code></pre></div><p>The same example works for qualified names. You might see xml like this</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;address&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;ns:street&gt;</span>123 Main St<span style="color:#f92672">&lt;/ns:street&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/address&gt;</span>
+</span></span></code></pre></div><p>and be tempted to write a struct like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;ns:street&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>That won&rsquo;t decode correctly! You can leave the xml tag as <code>street</code>, or if for some reason you need the prefix, replace the colon with a space</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;ns street&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="9-if-the-xml-element-contains-a-sub-element-whose-name-matches-a-struct-fields-xmlname-tag-and-the-struct-field-has-no-explicit-name-tag-as-per-the-previous-rule-unmarshal-maps-the-sub-element-to-that-struct-field">9. If the XML element contains a sub-element whose name matches a struct field&rsquo;s XMLName tag and the struct field has no explicit name tag as per the previous rule, unmarshal maps the sub-element to that struct field.</h5>
+<p>The xml struct tag can be left off for nested structs that contain a XMLName tag</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;value&gt; 123 Main St&lt;/value&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Street</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">XMLName</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Name</span> <span style="color:#e6db74">`xml:&#34;street&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Value</span>   <span style="color:#66d9ef">string</span>   <span style="color:#e6db74">`xml:&#34;value&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Street</span> <span style="color:#a6e22e">Street</span> <span style="color:#75715e">//no xml tag needed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Address</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Street</span>)
+</span></span></code></pre></div><h3 id="writing-a-customer-unmarshaller">Writing a customer Unmarshaller</h3>
+<p>This example takes the value of an xml field, parses the date, and separates it in to three struct fields.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Time</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Date</span> <span style="color:#a6e22e">Date</span> <span style="color:#e6db74">`xml:&#34;date&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Date</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Year</span>  <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Month</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Month</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Day</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">date</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Date</span>) <span style="color:#a6e22e">UnmarshalXML</span>(<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Decoder</span>, <span style="color:#a6e22e">start</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">StartElement</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">DecodeElement</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">s</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">start</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Parse</span>(<span style="color:#e6db74">&#34;2006-01-02&#34;</span>, <span style="color:#a6e22e">s</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">Year</span> = <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Year</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">Month</span> = <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Month</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">date</span>.<span style="color:#a6e22e">Day</span> = <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Day</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;time&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			&lt;date&gt;2025-02-14&lt;/date&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		&lt;/time&gt;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> <span style="color:#a6e22e">Time</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">Unmarshal</span>([]byte(<span style="color:#a6e22e">x</span>), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%+v&#34;</span>, <span style="color:#a6e22e">addr</span>.<span style="color:#a6e22e">Date</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="debugging">Debugging</h3>
+<p>Manually inspecting how an element is tokenized can be helpful when a document isn&rsquo;t decoding the way you expect.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span>	<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;address&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">			&lt;street&gt;123 Main St&lt;/street&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">		&lt;/address&gt;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">d</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">xml</span>.<span style="color:#a6e22e">NewDecoder</span>(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">NewBuffer</span>([]byte(<span style="color:#a6e22e">x</span>)))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Token</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T, %+v&#34;</span>, <span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">token</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><h3 id="dealing-with-large-xml-files">Dealing with large xml files</h3>
+<p>The honeymoon phase of xml in Go ends when you start dealing with deeply nested xml. do You write a struct per layer, do you write overly long struct tags to get the one field you need?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">`&lt;layer1&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;layer2&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;layer3&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &lt;layer4&gt;Hello, World!&lt;/layer4&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;/layer3&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &lt;/layer2&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &lt;/layer1&gt;`</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Layer1</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Layer2</span> <span style="color:#a6e22e">Layer2</span> <span style="color:#e6db74">`xml:&#34;layer2&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Layer2</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Layer3</span> <span style="color:#a6e22e">Layer3</span> <span style="color:#e6db74">`xml:&#34;layer3&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Layer3</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Layer4</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;layer4&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// alternatively
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">PathedLayer4</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Msg</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`xml:&#34;layer2&gt;layer3&gt;layer4&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>There are libraries that can simplify either approach.</p>
+<ul>
+<li>If you have an xsd file, <a href="https://github.com/GoComply/xsd2go">xsd2go</a> will generate your structs for you.</li>
+<li>if you want to fetch elements without defining structs, <a href="https://github.com/beevik/etree">etree</a> is a good option.</li>
+</ul>
+
+</content>
+<p>
+  
+  <a href="https://tscales.github.io/tags/golang/">#Golang</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
