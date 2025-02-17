@@ -3,24 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tscales.github.io/</loc>
-    <lastmod>2025-02-12T15:30:37-08:00</lastmod>
+    <lastmod>2025-02-15T16:54:06-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/</loc>
-    <lastmod>2025-02-12T15:30:37-08:00</lastmod>
+    <lastmod>2025-02-15T16:54:06-08:00</lastmod>
   </url><url>
-    <loc>https://tscales.github.io/tags/golang/</loc>
-    <lastmod>2025-02-12T15:30:37-08:00</lastmod>
+    <loc>https://tscales.github.io/blog/latin/illyricum-sacrum/volume2/glycerius/</loc>
+    <lastmod>2025-02-15T16:54:06-08:00</lastmod>
+  </url><url>
+    <loc>https://tscales.github.io/tags/latin/</loc>
+    <lastmod>2025-02-15T16:54:06-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/tags/</loc>
+    <lastmod>2025-02-15T16:54:06-08:00</lastmod>
+  </url><url>
+    <loc>https://tscales.github.io/tags/golang/</loc>
     <lastmod>2025-02-12T15:30:37-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/xml-in-go/</loc>
     <lastmod>2025-02-12T15:30:37-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/latin/illyricum-sacrum/volume2/hesychius/</loc>
-    <lastmod>2025-01-25T22:36:42-08:00</lastmod>
-  </url><url>
-    <loc>https://tscales.github.io/tags/latin/</loc>
     <lastmod>2025-01-25T22:36:42-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/latin/illyricum-sacrum/volume1/table-of-contents/</loc>
