@@ -6,8 +6,15 @@
     <description>Recent content in Golang on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 12 Feb 2025 15:30:37 -0800</lastBuildDate>
+    <lastBuildDate>Thu, 03 Jul 2025 18:25:56 -0700</lastBuildDate>
     <atom:link href="https://tscales.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Programming Without Structs</title>
+      <link>https://tscales.github.io/blog/programming-without-structs/</link>
+      <pubDate>Thu, 03 Jul 2025 18:25:56 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/programming-without-structs/</guid>
+      <description>&lt;p&gt;Krzysztof Kowalczyk writes in his &lt;a href=&#34;https://blog.kowalczyk.info/article/d-2025-06-26/go-is-8020-language.html&#34;&gt;blog post&lt;/a&gt; on the go programming language:&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;Go has shown that you can have a popular language without enums. I don’t think you could have a popular language without structs. There’s a line below which the language is just not useful enough.&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;What would it look like if we didn&amp;rsquo;t have structs? The core idea of struct is a covenient way to store and access data. We woud need to substitute our struct for another primitive type that can hold data. A map provides similar lookup capabilities by using a key, with less gaurantees that a field might even be present.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>XML in Go</title>
       <link>https://tscales.github.io/blog/xml-in-go/</link>
