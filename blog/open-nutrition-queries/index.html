@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Open Nutrition Dataset | Ty Scales</title>
+<meta name="title" content="Open Nutrition Dataset" />
+<meta name="description" content="If you went to the grocery store and copied each product&rsquo;s food label, you&rsquo;d end up with something like the Open Nutrition dataset. Open Nutrition sources from other public datasets, like FoodData Central.
+Nutrients in the dataset are normalized to per 100G. This makes it easy to write a query to find out which products are offering the most caffeine.
+import csv
+import json
+
+with open(&#34;data/data.tsv&#34;, &#34;r&#34;, encoding=&#34;utf-8&#34;) as tsv_file:
+    reader = csv.DictReader(tsv_file, delimiter=&#39;\t&#39;)
+
+    caffeine_products = []
+    for row in reader:
+        nutrients = row[&#39;nutrition_100g&#39;]
+        d = json.loads(nutrients)
+        if &#34;caffeine&#34; in d:
+            caffeine_products.append((row[&#39;name&#39;], d[&#34;caffeine&#34;]))
+
+    most_caffeine = sorted(caffeine_products, key=lambda x: x[1], reverse = True)
+(&#39;Soda by Double-Cola Company (Usa)&#39;, 10000)
+(&#39;Instant Green Tea&#39;, 3500)
+(&#39;Energy Sticks by Alani Nu&#39;, 3450)
+(&#39;Alani Energy Sticks by Alani Nu&#39;, 3450)
+(&#39;Matcha&#39;, 3200)
+(&#39;Instant Black Tea&#39;, 3000)
+(&#39;British Blend Black Tea by Tetley&#39;, 2217.7419)
+(&#39;Low Caffeine Instant Coffee&#39;, 1571)
+(&#39;Southern Iced Tea by Luzianne&#39;, 714.2857)
+(&#39;Coffee Extract&#39;, 600)
+(&#39;Perk Energy by Funtastik&#39;, 455)
+(&#39;Café de Olla&#39;, 400)
+(&#34;Espresso, Single Shot by Dunkin&#39;&#34;, 393.3333)
+(&#34;Espresso, Double Shot by Dunkin&#39;&#34;, 393.3333)
+(&#39;Sweetened Mocha Coffee Mix&#39;, 360)
+(&#39;Sweetened Instant Coffee&#39;, 303)
+(&#39;Espresso, Double Shot by Krispy Kreme&#39;, 250)
+(&#39;Espresso, Single Shot by Krispy Kreme&#39;, 250)
+(&#39;Espresso Con Panna, Solo by Starbucks&#39;, 250)
+(&#39;Espresso Macchiato, Solo by Starbucks&#39;, 250)
+(&#39;Espresso Macchiato, Doppio by Starbucks&#39;, 250)
+(&#39;Espresso Con Panna, Doppio by Starbucks&#39;, 250)
+(&#34;Natural Unsweetened Cocoa by Hershey&#39;s&#34;, 240)
+(&#34;Natural Unsweetened Cocoa Powder by Hershey&#39;s&#34;, 240)
+(&#39;Organic Cacao Powder by Betterbody Foods&#39;, 240)
+right away we see some outliers, which I suspect is junk data or has been calculated differently from the others (perhaps as a bulk product rather than individual serving)." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/open-nutrition-queries/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Open Nutrition Dataset">
+  <meta property="og:description" content="If you went to the grocery store and copied each product’s food label, you’d end up with something like the Open Nutrition dataset. Open Nutrition sources from other public datasets, like FoodData Central.
+Nutrients in the dataset are normalized to per 100G. This makes it easy to write a query to find out which products are offering the most caffeine.
+import csv import json with open(&#34;data/data.tsv&#34;, &#34;r&#34;, encoding=&#34;utf-8&#34;) as tsv_file: reader = csv.DictReader(tsv_file, delimiter=&#39;\t&#39;) caffeine_products = [] for row in reader: nutrients = row[&#39;nutrition_100g&#39;] d = json.loads(nutrients) if &#34;caffeine&#34; in d: caffeine_products.append((row[&#39;name&#39;], d[&#34;caffeine&#34;])) most_caffeine = sorted(caffeine_products, key=lambda x: x[1], reverse = True) (&#39;Soda by Double-Cola Company (Usa)&#39;, 10000) (&#39;Instant Green Tea&#39;, 3500) (&#39;Energy Sticks by Alani Nu&#39;, 3450) (&#39;Alani Energy Sticks by Alani Nu&#39;, 3450) (&#39;Matcha&#39;, 3200) (&#39;Instant Black Tea&#39;, 3000) (&#39;British Blend Black Tea by Tetley&#39;, 2217.7419) (&#39;Low Caffeine Instant Coffee&#39;, 1571) (&#39;Southern Iced Tea by Luzianne&#39;, 714.2857) (&#39;Coffee Extract&#39;, 600) (&#39;Perk Energy by Funtastik&#39;, 455) (&#39;Café de Olla&#39;, 400) (&#34;Espresso, Single Shot by Dunkin&#39;&#34;, 393.3333) (&#34;Espresso, Double Shot by Dunkin&#39;&#34;, 393.3333) (&#39;Sweetened Mocha Coffee Mix&#39;, 360) (&#39;Sweetened Instant Coffee&#39;, 303) (&#39;Espresso, Double Shot by Krispy Kreme&#39;, 250) (&#39;Espresso, Single Shot by Krispy Kreme&#39;, 250) (&#39;Espresso Con Panna, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Doppio by Starbucks&#39;, 250) (&#39;Espresso Con Panna, Doppio by Starbucks&#39;, 250) (&#34;Natural Unsweetened Cocoa by Hershey&#39;s&#34;, 240) (&#34;Natural Unsweetened Cocoa Powder by Hershey&#39;s&#34;, 240) (&#39;Organic Cacao Powder by Betterbody Foods&#39;, 240) right away we see some outliers, which I suspect is junk data or has been calculated differently from the others (perhaps as a bulk product rather than individual serving).">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-08-03T10:51:32-07:00">
+    <meta property="article:modified_time" content="2025-08-03T10:51:32-07:00">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Open Nutrition Dataset">
+  <meta name="twitter:description" content="If you went to the grocery store and copied each product’s food label, you’d end up with something like the Open Nutrition dataset. Open Nutrition sources from other public datasets, like FoodData Central.
+Nutrients in the dataset are normalized to per 100G. This makes it easy to write a query to find out which products are offering the most caffeine.
+import csv import json with open(&#34;data/data.tsv&#34;, &#34;r&#34;, encoding=&#34;utf-8&#34;) as tsv_file: reader = csv.DictReader(tsv_file, delimiter=&#39;\t&#39;) caffeine_products = [] for row in reader: nutrients = row[&#39;nutrition_100g&#39;] d = json.loads(nutrients) if &#34;caffeine&#34; in d: caffeine_products.append((row[&#39;name&#39;], d[&#34;caffeine&#34;])) most_caffeine = sorted(caffeine_products, key=lambda x: x[1], reverse = True) (&#39;Soda by Double-Cola Company (Usa)&#39;, 10000) (&#39;Instant Green Tea&#39;, 3500) (&#39;Energy Sticks by Alani Nu&#39;, 3450) (&#39;Alani Energy Sticks by Alani Nu&#39;, 3450) (&#39;Matcha&#39;, 3200) (&#39;Instant Black Tea&#39;, 3000) (&#39;British Blend Black Tea by Tetley&#39;, 2217.7419) (&#39;Low Caffeine Instant Coffee&#39;, 1571) (&#39;Southern Iced Tea by Luzianne&#39;, 714.2857) (&#39;Coffee Extract&#39;, 600) (&#39;Perk Energy by Funtastik&#39;, 455) (&#39;Café de Olla&#39;, 400) (&#34;Espresso, Single Shot by Dunkin&#39;&#34;, 393.3333) (&#34;Espresso, Double Shot by Dunkin&#39;&#34;, 393.3333) (&#39;Sweetened Mocha Coffee Mix&#39;, 360) (&#39;Sweetened Instant Coffee&#39;, 303) (&#39;Espresso, Double Shot by Krispy Kreme&#39;, 250) (&#39;Espresso, Single Shot by Krispy Kreme&#39;, 250) (&#39;Espresso Con Panna, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Doppio by Starbucks&#39;, 250) (&#39;Espresso Con Panna, Doppio by Starbucks&#39;, 250) (&#34;Natural Unsweetened Cocoa by Hershey&#39;s&#34;, 240) (&#34;Natural Unsweetened Cocoa Powder by Hershey&#39;s&#34;, 240) (&#39;Organic Cacao Powder by Betterbody Foods&#39;, 240) right away we see some outliers, which I suspect is junk data or has been calculated differently from the others (perhaps as a bulk product rather than individual serving).">
+
+
+
+
+  <meta itemprop="name" content="Open Nutrition Dataset">
+  <meta itemprop="description" content="If you went to the grocery store and copied each product’s food label, you’d end up with something like the Open Nutrition dataset. Open Nutrition sources from other public datasets, like FoodData Central.
+Nutrients in the dataset are normalized to per 100G. This makes it easy to write a query to find out which products are offering the most caffeine.
+import csv import json with open(&#34;data/data.tsv&#34;, &#34;r&#34;, encoding=&#34;utf-8&#34;) as tsv_file: reader = csv.DictReader(tsv_file, delimiter=&#39;\t&#39;) caffeine_products = [] for row in reader: nutrients = row[&#39;nutrition_100g&#39;] d = json.loads(nutrients) if &#34;caffeine&#34; in d: caffeine_products.append((row[&#39;name&#39;], d[&#34;caffeine&#34;])) most_caffeine = sorted(caffeine_products, key=lambda x: x[1], reverse = True) (&#39;Soda by Double-Cola Company (Usa)&#39;, 10000) (&#39;Instant Green Tea&#39;, 3500) (&#39;Energy Sticks by Alani Nu&#39;, 3450) (&#39;Alani Energy Sticks by Alani Nu&#39;, 3450) (&#39;Matcha&#39;, 3200) (&#39;Instant Black Tea&#39;, 3000) (&#39;British Blend Black Tea by Tetley&#39;, 2217.7419) (&#39;Low Caffeine Instant Coffee&#39;, 1571) (&#39;Southern Iced Tea by Luzianne&#39;, 714.2857) (&#39;Coffee Extract&#39;, 600) (&#39;Perk Energy by Funtastik&#39;, 455) (&#39;Café de Olla&#39;, 400) (&#34;Espresso, Single Shot by Dunkin&#39;&#34;, 393.3333) (&#34;Espresso, Double Shot by Dunkin&#39;&#34;, 393.3333) (&#39;Sweetened Mocha Coffee Mix&#39;, 360) (&#39;Sweetened Instant Coffee&#39;, 303) (&#39;Espresso, Double Shot by Krispy Kreme&#39;, 250) (&#39;Espresso, Single Shot by Krispy Kreme&#39;, 250) (&#39;Espresso Con Panna, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Solo by Starbucks&#39;, 250) (&#39;Espresso Macchiato, Doppio by Starbucks&#39;, 250) (&#39;Espresso Con Panna, Doppio by Starbucks&#39;, 250) (&#34;Natural Unsweetened Cocoa by Hershey&#39;s&#34;, 240) (&#34;Natural Unsweetened Cocoa Powder by Hershey&#39;s&#34;, 240) (&#39;Organic Cacao Powder by Betterbody Foods&#39;, 240) right away we see some outliers, which I suspect is junk data or has been calculated differently from the others (perhaps as a bulk product rather than individual serving).">
+  <meta itemprop="datePublished" content="2025-08-03T10:51:32-07:00">
+  <meta itemprop="dateModified" content="2025-08-03T10:51:32-07:00">
+  <meta itemprop="wordCount" content="788">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Open Nutrition Dataset</h1>
+<p>
+  <i>
+    <time datetime='2025-08-03' pubdate>
+      03 Aug, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>If you went to the grocery store and copied each product&rsquo;s food label, you&rsquo;d end up with something like the <a href="https://www.opennutrition.app/">Open Nutrition</a> dataset. Open Nutrition sources from other public datasets, like <a href="https://fdc.nal.usda.gov/">FoodData Central</a>.</p>
+<p>Nutrients in the dataset are normalized to per 100G. This makes it easy to write a query to find out which products are offering the most caffeine.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> csv
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;data/data.tsv&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> tsv_file:
+</span></span><span style="display:flex;"><span>    reader <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>DictReader(tsv_file, delimiter<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    caffeine_products <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> reader:
+</span></span><span style="display:flex;"><span>        nutrients <span style="color:#f92672">=</span> row[<span style="color:#e6db74">&#39;nutrition_100g&#39;</span>]
+</span></span><span style="display:flex;"><span>        d <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(nutrients)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#34;caffeine&#34;</span> <span style="color:#f92672">in</span> d:
+</span></span><span style="display:flex;"><span>            caffeine_products<span style="color:#f92672">.</span>append((row[<span style="color:#e6db74">&#39;name&#39;</span>], d[<span style="color:#e6db74">&#34;caffeine&#34;</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    most_caffeine <span style="color:#f92672">=</span> sorted(caffeine_products, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x: x[<span style="color:#ae81ff">1</span>], reverse <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span>(&#39;Soda by Double-Cola Company (Usa)&#39;, 10000)
+</span></span><span style="display:flex;"><span>(&#39;Instant Green Tea&#39;, 3500)
+</span></span><span style="display:flex;"><span>(&#39;Energy Sticks by Alani Nu&#39;, 3450)
+</span></span><span style="display:flex;"><span>(&#39;Alani Energy Sticks by Alani Nu&#39;, 3450)
+</span></span><span style="display:flex;"><span>(&#39;Matcha&#39;, 3200)
+</span></span><span style="display:flex;"><span>(&#39;Instant Black Tea&#39;, 3000)
+</span></span><span style="display:flex;"><span>(&#39;British Blend Black Tea by Tetley&#39;, 2217.7419)
+</span></span><span style="display:flex;"><span>(&#39;Low Caffeine Instant Coffee&#39;, 1571)
+</span></span><span style="display:flex;"><span>(&#39;Southern Iced Tea by Luzianne&#39;, 714.2857)
+</span></span><span style="display:flex;"><span>(&#39;Coffee Extract&#39;, 600)
+</span></span><span style="display:flex;"><span>(&#39;Perk Energy by Funtastik&#39;, 455)
+</span></span><span style="display:flex;"><span>(&#39;Café de Olla&#39;, 400)
+</span></span><span style="display:flex;"><span>(&#34;Espresso, Single Shot by Dunkin&#39;&#34;, 393.3333)
+</span></span><span style="display:flex;"><span>(&#34;Espresso, Double Shot by Dunkin&#39;&#34;, 393.3333)
+</span></span><span style="display:flex;"><span>(&#39;Sweetened Mocha Coffee Mix&#39;, 360)
+</span></span><span style="display:flex;"><span>(&#39;Sweetened Instant Coffee&#39;, 303)
+</span></span><span style="display:flex;"><span>(&#39;Espresso, Double Shot by Krispy Kreme&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Espresso, Single Shot by Krispy Kreme&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Espresso Con Panna, Solo by Starbucks&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Espresso Macchiato, Solo by Starbucks&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Espresso Macchiato, Doppio by Starbucks&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Espresso Con Panna, Doppio by Starbucks&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#34;Natural Unsweetened Cocoa by Hershey&#39;s&#34;, 240)
+</span></span><span style="display:flex;"><span>(&#34;Natural Unsweetened Cocoa Powder by Hershey&#39;s&#34;, 240)
+</span></span><span style="display:flex;"><span>(&#39;Organic Cacao Powder by Betterbody Foods&#39;, 240)
+</span></span></code></pre></div><p>right away we see some outliers, which I suspect is junk data or has been calculated differently from the others (perhaps as a bulk product rather than individual serving).</p>
+<p>Here is the same query for added sugars</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span>(&#39;Nuun Instant Watermelon by Nuun&#39;, 500)
+</span></span><span style="display:flex;"><span>(&#39;Pine River Dairy Fudge by Pine River Pre-Pack&#39;, 300)
+</span></span><span style="display:flex;"><span>(&#39;Nutrition Shake Plus by Food Club&#39;, 250)
+</span></span><span style="display:flex;"><span>(&#39;Reddi Wip Dairy Whipped Topping by Egg Beaters&#39;, 240)
+</span></span><span style="display:flex;"><span>(&#39;Raw Manuka Honey by Manuka Health&#39;, 240)
+</span></span><span style="display:flex;"><span>(&#39;Caffe Latte Specialty Coffee Beverage by Starbucks&#39;, 188)
+</span></span><span style="display:flex;"><span>(&#39;Strawberry Nutrition Shake by Food Club&#39;, 175)
+</span></span><span style="display:flex;"><span>(&#39;Chocolate Pediatric Shake by Food Club&#39;, 175)
+</span></span><span style="display:flex;"><span>(&#39;Rice Whip by Tofutown North America&#39;, 167)
+</span></span><span style="display:flex;"><span>(&#39;Stevia <span style="color:#960050;background-color:#1e0010">&amp;</span> Monk Fruit Sweetner by Pure Via&#39;, 167)
+</span></span><span style="display:flex;"><span>(&#39;Cinnamon Flavored Mints by 365 Everyday Value&#39;, 149)
+</span></span><span style="display:flex;"><span>(&#39;Peppermint Naturally Flavored Mints by 365 Everyday Value&#39;, 149)
+</span></span><span style="display:flex;"><span>(&#39;Wintergreen Mints by Altoids&#39;, 143)
+</span></span><span style="display:flex;"><span>(&#39;Cinnamon Curiously Strong Mints by Altoids&#39;, 143)
+</span></span><span style="display:flex;"><span>(&#34;Curiously Strong Mints by Wrigley&#39;s&#34;, 143)
+</span></span><span style="display:flex;"><span>(&#34;Curiously Strong Mints by Wrigley&#39;s&#34;, 143)
+</span></span><span style="display:flex;"><span>(&#39;Caramel Sauce&#39;, 140)
+</span></span><span style="display:flex;"><span>(&#39;Pediasure by Rib Rack&#39;, 140)
+</span></span><span style="display:flex;"><span>(&#39;All Purpose Seasoning by Grace&#39;, 133)
+</span></span><span style="display:flex;"><span>(&#34;Mango Kombucha by GT&#39;s&#34;, 125)
+</span></span><span style="display:flex;"><span>(&#39;Organic Stevia Blend by Sugar In The Raw&#39;, 125)
+</span></span><span style="display:flex;"><span>(&#39;Organic Stevia in the Raw by Sugar In The Raw&#39;, 125)
+</span></span><span style="display:flex;"><span>(&#39;Equal Plus by Equal&#39;, 125)
+</span></span><span style="display:flex;"><span>(&#39;Orange Crystallized Orange by True Citrus Co.&#39;, 125)
+</span></span><span style="display:flex;"><span>(&#39;Bananaberry Drinkable Yogurt by Yo Gusto&#39;, 125)
+</span></span></code></pre></div><p>We can make a rough estimate of nutritionally similar products using Euclidean distance. Here is an example for Red Bull.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_distance</span>(a, b, keys):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> math<span style="color:#f92672">.</span>sqrt(sum((float(a<span style="color:#f92672">.</span>get(k, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">or</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">-</span> float(b<span style="color:#f92672">.</span>get(k, <span style="color:#ae81ff">0</span>) <span style="color:#f92672">or</span> <span style="color:#ae81ff">0</span>)) <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> k <span style="color:#f92672">in</span> keys))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findSimilarProducts</span>(reference, data):
+</span></span><span style="display:flex;"><span>    reference_nutrients <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(reference[<span style="color:#e6db74">&#39;nutrition_100g&#39;</span>])
+</span></span><span style="display:flex;"><span>    all_keys <span style="color:#f92672">=</span> set()
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># get all unique keys in the dataset.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> data:
+</span></span><span style="display:flex;"><span>        nt <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(item[<span style="color:#e6db74">&#39;nutrition_100g&#39;</span>])
+</span></span><span style="display:flex;"><span>        all_keys<span style="color:#f92672">.</span>update(nt<span style="color:#f92672">.</span>keys())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    distances <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> product <span style="color:#f92672">in</span> data:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> product[<span style="color:#e6db74">&#39;id&#39;</span>] <span style="color:#f92672">==</span> reference[<span style="color:#e6db74">&#39;id&#39;</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>        product_nutrients <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(product[<span style="color:#e6db74">&#39;nutrition_100g&#39;</span>])
+</span></span><span style="display:flex;"><span>        dist <span style="color:#f92672">=</span> compute_distance(reference_nutrients, product_nutrients, all_keys)
+</span></span><span style="display:flex;"><span>        distances<span style="color:#f92672">.</span>append((dist, product[<span style="color:#e6db74">&#39;name&#39;</span>]))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sorted(distances, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x: x[<span style="color:#ae81ff">0</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;data/data.tsv&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>, encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>) <span style="color:#66d9ef">as</span> tsv_file:
+</span></span><span style="display:flex;"><span>        reader <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>DictReader(tsv_file, delimiter<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> list(reader)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        redbull <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> product <span style="color:#f92672">in</span> data:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># Red Bull Product Id</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> product[<span style="color:#e6db74">&#39;id&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;fd_AN091iY8O6rZ&#39;</span>:
+</span></span><span style="display:flex;"><span>                redbull <span style="color:#f92672">=</span> product
+</span></span><span style="display:flex;"><span>        res <span style="color:#f92672">=</span> findSimilarProducts(redbull, data, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> res[:<span style="color:#ae81ff">25</span>]:
+</span></span><span style="display:flex;"><span>            print(i)
+</span></span></code></pre></div><p>Here are the top 25, a lower score indicates a closer similiarity in nutrition.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Markdown" data-lang="Markdown"><span style="display:flex;"><span>(46.61261566893666, &#39;Diddy on the Beach by TGI Fridays&#39;)
+</span></span><span style="display:flex;"><span>(62.355189037962184, &#39;Strawberry Watermelon Energy Drink by Prime&#39;)
+</span></span><span style="display:flex;"><span>(77.14704501800442, &#39;Red Bull Passion Slush by TGI Fridays&#39;)
+</span></span><span style="display:flex;"><span>(77.30601533587149, &#39;Herbal Energy Drink&#39;)
+</span></span><span style="display:flex;"><span>(78.00579800751993, &#39;Sparkling Mango Passionfruit Energy Drink by Celsius&#39;)
+</span></span><span style="display:flex;"><span>(78.16809589538433, &#39;Arctic Vibe Frozen Berry Energy Drink by Celsius&#39;)
+</span></span><span style="display:flex;"><span>(78.2168620631127, &#39;Sparkling Wild Berry Energy Drink by Celsius&#39;)
+</span></span><span style="display:flex;"><span>(78.2168620631127, &#39;Raspberry Acai Green Tea Energy Drink by Celsius&#39;)
+</span></span><span style="display:flex;"><span>(79.90943145399046, &#39;Energy Original by Monster&#39;)
+</span></span><span style="display:flex;"><span>(85.98598702556131, &#39;Ultra Strawberry Dreams by Monster&#39;)
+</span></span><span style="display:flex;"><span>(87.371774527876, &#39;Ultra Watermelon Zero Sugar by Monster&#39;)
+</span></span><span style="display:flex;"><span>(91.9120960534031, &#39;Ultra Paradise Drink by Monster&#39;)
+</span></span><span style="display:flex;"><span>(92.77772608509005, &#39;Low Carb Energy Drink by Monster&#39;)
+</span></span><span style="display:flex;"><span>(95.83332604235335, &#39;Zero Ultra Energy Drink by Monster&#39;)
+</span></span><span style="display:flex;"><span>(98.59415735716797, &#39;Orange Cream by Ghost&#39;)
+</span></span><span style="display:flex;"><span>(98.7099894714309, &#39;Sour Patch Kids Blue Raspberry Energy Drink by Ghost&#39;)
+</span></span><span style="display:flex;"><span>(99.07548993292943, &#39;Warheads Watermelon Energy Drink by Ghost&#39;)
+</span></span><span style="display:flex;"><span>(124.78352109597644, &#39;Energy Drink&#39;)
+</span></span><span style="display:flex;"><span>(275.2666309001329, &#39;Moules Marinières&#39;)
+</span></span><span style="display:flex;"><span>(278.97467308691307, &#39;Spezi&#39;)
+</span></span><span style="display:flex;"><span>(279.04935706111206, &#39;Blended Strawberry Lemonade, Grande by Starbucks&#39;)
+</span></span><span style="display:flex;"><span>(279.0906669774538, &#34;Rainbow Lemonades, 14 fl oz by Applebee&#39;s&#34;)
+</span></span><span style="display:flex;"><span>(279.0922222570346, &#34;Rainbow Lemonades, Mucho by Applebee&#39;s&#34;)
+</span></span><span style="display:flex;"><span>(279.198935721127, &#39;Blended Strawberry Lemonade, Tall by Starbucks&#39;)
+</span></span><span style="display:flex;"><span>(279.20756376020694, &#39;Blended Strawberry Lemonade, Venti by Starbucks&#39;)
+</span></span></code></pre></div><p>Perhaps to be expected, most nutrionally similar products to Red Bull are other types of Energy Drinks.</p>
+
+</content>
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
