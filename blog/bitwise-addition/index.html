@@ -277,15 +277,15 @@ Let the sum of 5 and 7 be represented the expression
 $2^2 + 2^2 + 2^1 + 2^0 + 2^0$</p>
 <p>How can this expression be simplified? Whenever we encounter two exponents raised to the same power, rewrite the expression such that $2^n + 2^n = 2^{(n+1)}$.</p>
 <p>How do we represent that as code? We need the terms that appear in both <code>a</code> AND <code>b</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create a new expression that represents the like terms of both a and b
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create a new expression that represents the like terms of both a and b</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
 </span></span></code></pre></div><p>The like terms between <code>a</code> and <code>b</code> are $2^2$ and $2^0$. The new expression <code>likeTerms</code> represents $2^2 + 2^0$ and we want to turn that in to $2^3 + 2^1$. There&rsquo;s a bitwise operator for that. It&rsquo;s the bitwise SHIFT operator.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// for each exponent in likeTerms, shift 2^n to 2^(n + 1)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// for each exponent in likeTerms, shift 2^n to 2^(n + 1)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
 </span></span></code></pre></div><p><code>newExpressionB</code> represents $2^3 + 2^1$ and can now be added to the remaining terms from <code>a</code> and <code>b</code> that were not merged together. In this case, $2^1$ from expression <code>b</code> is the only one exclusive to either expression. How do we extract it from the original expressions? We create a new expression <code>uniqueTerms</code> that contains the exponents <em>exclusive</em> to <code>a</code> and <em>exclusive</em> to <code>b</code>. There&rsquo;s a bitwise operator for that. Its the XOR operator.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create and expression of the terms that were exclusive to a and b, the terms that didn&#39;t get rewritten in to newExpressionB
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// create and expression of the terms that were exclusive to a and b, the terms that didn&#39;t get rewritten in to newExpressionB</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
 </span></span></code></pre></div><p>we now have two new expressions. <code>newExpressionB</code> representing $2^3 + 2^1$ and <code>uniqueTerms</code> representing $2^1$ that we need to add together. We have a function for that. It&rsquo;s the <code>bitwise_add</code> function that we&rsquo;ve been crafting this entire time! Keep passing the new expressions recursively, until <code>a</code> consists of all unique terms and <code>b</code> is zero. At that point, we have obtained the answer.</p>
 <p>Here are the remaining steps.<br>
 Rewrite $2^3 + 2^1 + 2^1$ as $2^3 + 2^2$<br>
@@ -295,17 +295,17 @@ All terms are unique: $7 + 5 = 2^3 + 2^2 = 12$</p>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the unique terms(bits) between a and b
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the unique terms(bits) between a and b</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">uniqueTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>^<span style="color:#a6e22e">b</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the like terms(bits) between a and b
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// find the like terms(bits) between a and b</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">b</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// for each like term, shift exponent from 2^n to 2^(n + 1)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// for each like term, shift exponent from 2^n to 2^(n + 1)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">newExpressionB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">likeTerms</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">1</span>
 </span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call bitwise_add until there are no like terms, return a
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">uniqueTerms</span>, <span style="color:#a6e22e">newExpressionB</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// call bitwise_add until there are no like terms, return a</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">bitwise_add</span>(<span style="color:#a6e22e">uniqueTerms</span>, <span style="color:#a6e22e">newExpressionB</span>)
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div>
 </content>

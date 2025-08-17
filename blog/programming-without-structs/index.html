@@ -10,7 +10,6 @@
 <meta name="description" content="Krzysztof Kowalczyk writes in his blog post on the go programming language:
 
 Go has shown that you can have a popular language without enums. I don’t think you could have a popular language without structs. There’s a line below which the language is just not useful enough.
-
 What would it look like if we didn&rsquo;t have structs? The core idea of struct is a covenient way to store and access data. We woud need to substitute our struct for another primitive type that can hold data. A map provides similar lookup capabilities by using a key, with less gaurantees that a field might even be present." />
 <meta name="keywords" content="golang," />
 
@@ -249,8 +248,7 @@ What would it look like if we didn’t have structs? The core idea of struct is 
 <content>
   <p>Krzysztof Kowalczyk writes in his <a href="https://blog.kowalczyk.info/article/d-2025-06-26/go-is-8020-language.html">blog post</a> on the go programming language:</p>
 <blockquote>
-<p>Go has shown that you can have a popular language without enums. I don’t think you could have a popular language without structs. There’s a line below which the language is just not useful enough.</p>
-</blockquote>
+<p>Go has shown that you can have a popular language without enums. I don’t think you could have a popular language without structs. There’s a line below which the language is just not useful enough.</p></blockquote>
 <p>What would it look like if we didn&rsquo;t have structs? The core idea of struct is a covenient way to store and access data. We woud need to substitute our struct for another primitive type that can hold data. A map provides similar lookup capabilities by using a key, with less gaurantees that a field might even be present.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">FirstName</span> <span style="color:#66d9ef">string</span>
@@ -262,14 +260,14 @@ What would it look like if we didn’t have structs? The core idea of struct is 
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">FirstName</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">LastName</span>
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">any</span>]<span style="color:#a6e22e">any</span>{
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">any</span>]<span style="color:#66d9ef">any</span>{
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;FirstName&#34;</span>: <span style="color:#e6db74">&#34;jane&#34;</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;LastName&#34;</span>: <span style="color:#e6db74">&#34;smith&#34;</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;EmployeeId&#34;</span>: <span style="color:#e6db74">&#34;1234&#34;</span>,
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;FullName&#34;</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">fn</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">ln</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> { <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fn</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">ln</span>},
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Moving away from named fields, we can also just put everything in a list, hope the order is right, and access values by index.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">any</span>{
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">any</span>{
 </span></span><span style="display:flex;"><span>	  <span style="color:#e6db74">&#34;jane&#34;</span>,
 </span></span><span style="display:flex;"><span>	  <span style="color:#e6db74">&#34;smith&#34;</span>,
 </span></span><span style="display:flex;"><span>	  <span style="color:#e6db74">&#34;1234&#34;</span>,
@@ -287,8 +285,8 @@ What would it look like if we didn’t have structs? The core idea of struct is 
 </span></span><span style="display:flex;"><span>fn <span style="color:#f92672">=</span> eval(fields[<span style="color:#ae81ff">2</span>])
 </span></span><span style="display:flex;"><span>fullName <span style="color:#f92672">=</span> fn(fields[<span style="color:#ae81ff">0</span>], fields[<span style="color:#ae81ff">1</span>])
 </span></span></code></pre></div><p>From a string, it&rsquo;s not much farther to go to a byte array.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">//allocate 30 bytes, 10 for each field
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">30</span>)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">//allocate 30 bytes, 10 for each field</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">byte</span>, <span style="color:#ae81ff">30</span>)
 </span></span><span style="display:flex;"><span>copy(<span style="color:#a6e22e">user</span>[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">10</span>], []byte(<span style="color:#e6db74">&#34;jane&#34;</span>))
 </span></span><span style="display:flex;"><span>copy(<span style="color:#a6e22e">user</span>[<span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">20</span>], []byte(<span style="color:#e6db74">&#34;smith&#34;</span>))
 </span></span><span style="display:flex;"><span>copy(<span style="color:#a6e22e">user</span>[<span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">30</span>], []byte(<span style="color:#e6db74">&#34;1234&#34;</span>))
@@ -299,13 +297,13 @@ What would it look like if we didn’t have structs? The core idea of struct is 
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Right</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Node</span>
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>Applying the pattern we used for the <code>user</code> above, <code>Value</code> will be at index 0, <code>Left</code> at index 1, and <code>Right</code> at index 2. Since <code>Left</code> and <code>Right</code> are also Node types, they will also be lists. Even at a shallow depth, keeping track of brackets can get out of hand quickly.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// atomic example, no branches
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">any</span>{<span style="color:#ae81ff">0</span>, []<span style="color:#a6e22e">any</span>{}, []<span style="color:#a6e22e">any</span>{}}
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// atomic example, no branches</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">node</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">any</span>{<span style="color:#ae81ff">0</span>, []<span style="color:#66d9ef">any</span>{}, []<span style="color:#66d9ef">any</span>{}}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// A tree with a left and a right branch
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">tree</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">any</span>{<span style="color:#ae81ff">0</span>, []<span style="color:#a6e22e">any</span>{<span style="color:#ae81ff">1</span>, []<span style="color:#a6e22e">any</span>{}, []<span style="color:#a6e22e">any</span>{}}, []<span style="color:#a6e22e">any</span>{<span style="color:#ae81ff">2</span>, []<span style="color:#a6e22e">any</span>{}, []<span style="color:#a6e22e">any</span>{}}}
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// [0 [1 [] []] [2 [] []]]
-</span></span></span></code></pre></div><p>It goes to show, Programming without structs can be done, but structs make things much more convenient.</p>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A tree with a left and a right branch</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">tree</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">any</span>{<span style="color:#ae81ff">0</span>, []<span style="color:#66d9ef">any</span>{<span style="color:#ae81ff">1</span>, []<span style="color:#66d9ef">any</span>{}, []<span style="color:#66d9ef">any</span>{}}, []<span style="color:#66d9ef">any</span>{<span style="color:#ae81ff">2</span>, []<span style="color:#66d9ef">any</span>{}, []<span style="color:#66d9ef">any</span>{}}}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// [0 [1 [] []] [2 [] []]]</span>
+</span></span></code></pre></div><p>It goes to show, Programming without structs can be done, but structs make things much more convenient.</p>
 
 </content>
 <p>
