@@ -1,0 +1,7 @@
+p > code, li > code, span > code {
+  background-color: #d63384;
+  color: #d63384;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-family: "Fira Code", monospace;
+}

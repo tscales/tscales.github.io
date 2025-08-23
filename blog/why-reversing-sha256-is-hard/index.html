@@ -1,33 +1,32 @@
 <!DOCTYPE html>
 <html lang="en-us">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Why Reversing Sha256 Is Hard | Ty Scales</title>
 <meta name="title" content="Why Reversing Sha256 Is Hard" />
-<meta name="description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter &lsquo;a&rsquo;
-ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
-can also be represented like this in psuedo-code
-h0 := 0xca978112 
-h1 := 0xca1bbdca
-h2 := 0xfac231b3
-h3 := 0x9a23dc4d
-h4 := 0xa786eff8
-h5 := 0x147c4e72
-h6 := 0xb9807785
-h7 := 0xafee47bb
-Let&rsquo;s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We&rsquo;ve already hit a road block before we&rsquo;ve began!" />
+<meta name="description" content="sha256 is an algorithm that modifies eight 32 bit integers in place and returns a new set of 8 integers. The starting 8 integers are always the same:
+// first 32 bits of the fractional parts (the decimals) of
+// the square roots of the first 8 primes
+h0 := uint32(0x6a09e667)
+h1 := uint32(0xbb67ae85)
+h2 := uint32(0x3c6ef372)
+h3 := uint32(0xa54ff53a)
+h4 := uint32(0x510e527f)
+h5 := uint32(0x9b05688c)
+h6 := uint32(0x1f83d9ab)
+h7 := uint32(0x5be0cd19)
+The digest for the letter &lsquo;a&rsquo;" />
 <meta name="keywords" content="golang," />
 
 
-<meta property="og:url" content="http://localhost:1313/blog/why-reversing-sha256-is-hard/">
+<meta property="og:url" content="https://tscales.github.io/blog/why-reversing-sha256-is-hard/">
   <meta property="og:site_name" content="Ty Scales">
   <meta property="og:title" content="Why Reversing Sha256 Is Hard">
-  <meta property="og:description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
-ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
-h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+  <meta property="og:description" content="sha256 is an algorithm that modifies eight 32 bit integers in place and returns a new set of 8 integers. The starting 8 integers are always the same:
+// first 32 bits of the fractional parts (the decimals) of // the square roots of the first 8 primes h0 := uint32(0x6a09e667) h1 := uint32(0xbb67ae85) h2 := uint32(0x3c6ef372) h3 := uint32(0xa54ff53a) h4 := uint32(0x510e527f) h5 := uint32(0x9b05688c) h6 := uint32(0x1f83d9ab) h7 := uint32(0x5be0cd19) The digest for the letter ‘a’">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="blog">
@@ -40,20 +39,18 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Why Reversing Sha256 Is Hard">
-  <meta name="twitter:description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
-ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
-h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+  <meta name="twitter:description" content="sha256 is an algorithm that modifies eight 32 bit integers in place and returns a new set of 8 integers. The starting 8 integers are always the same:
+// first 32 bits of the fractional parts (the decimals) of // the square roots of the first 8 primes h0 := uint32(0x6a09e667) h1 := uint32(0xbb67ae85) h2 := uint32(0x3c6ef372) h3 := uint32(0xa54ff53a) h4 := uint32(0x510e527f) h5 := uint32(0x9b05688c) h6 := uint32(0x1f83d9ab) h7 := uint32(0x5be0cd19) The digest for the letter ‘a’">
 
 
 
 
   <meta itemprop="name" content="Why Reversing Sha256 Is Hard">
-  <meta itemprop="description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
-ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
-h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+  <meta itemprop="description" content="sha256 is an algorithm that modifies eight 32 bit integers in place and returns a new set of 8 integers. The starting 8 integers are always the same:
+// first 32 bits of the fractional parts (the decimals) of // the square roots of the first 8 primes h0 := uint32(0x6a09e667) h1 := uint32(0xbb67ae85) h2 := uint32(0x3c6ef372) h3 := uint32(0xa54ff53a) h4 := uint32(0x510e527f) h5 := uint32(0x9b05688c) h6 := uint32(0x1f83d9ab) h7 := uint32(0x5be0cd19) The digest for the letter ‘a’">
   <meta itemprop="datePublished" content="2025-08-17T18:20:47-07:00">
   <meta itemprop="dateModified" content="2025-08-17T18:20:47-07:00">
-  <meta itemprop="wordCount" content="471">
+  <meta itemprop="wordCount" content="559">
   <meta itemprop="keywords" content="Golang">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
@@ -186,7 +183,7 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
 
   @media (prefers-color-scheme: dark) {
     body {
-      background-color: #333;
+      background-color: #1b1b20;
       color: #ddd;
     }
 
@@ -206,7 +203,7 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
     }
 
     code {
-      background-color: #777;
+      background-color: #252525;
     }
 
     pre code {
@@ -229,7 +226,6 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
   }
 
 </style>
-
 </head>
 
 <body>
@@ -254,25 +250,36 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
 </p>
 
 <content>
-  <p>A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter &lsquo;a&rsquo;</p>
+  <p>sha256 is an algorithm that modifies eight 32 bit integers in place and returns a new set of 8 integers. The starting 8 integers are always the same:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// first 32 bits of the fractional parts (the decimals) of</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// the square roots of the first 8 primes</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h0</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x6a09e667</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h1</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xbb67ae85</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h2</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x3c6ef372</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h3</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xa54ff53a</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h4</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x510e527f</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h5</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x9b05688c</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h6</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x1f83d9ab</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h7</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x5be0cd19</span>)
+</span></span></code></pre></div><p>The digest for the letter &lsquo;a&rsquo;</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb</span>
-</span></span></code></pre></div><p>can also be represented like this in psuedo-code</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">h0</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xca978112</span> 
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xca1bbdca</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h2</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xfac231b3</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h3</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0x9a23dc4d</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h4</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xa786eff8</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h5</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0x147c4e72</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h6</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xb9807785</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h7</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xafee47bb</span>
-</span></span></code></pre></div><p>Let&rsquo;s focus on just reversing <code>h0</code>. how did we arrive at this number? The sha256 calcualtes <code>h0</code> as the addition of the previous value of <code>h0</code> with a value <code>a</code>. What was the previous value of h0? We have no idea! We&rsquo;ve already hit a road block before we&rsquo;ve began!</p>
-<p>We can try simplifying the problem. Assume the message is small enough to fit in to 512 bits, this is the size of a block that sha256 works on. Since <code>h0 + a</code> happens once per block, <code>h0</code> would be its initial starting value: <code>0x6a09e667</code></p>
-<p>This let&rsquo;s us turn out attention on to how <code>a</code> was calculated:</p>
+</span></span></code></pre></div><p>is just the concatenation of the 8 calculated integers.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">h0</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xca978112</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h1</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xca1bbdca</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h2</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xfac231b3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h3</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x9a23dc4d</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h4</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xa786eff8</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h5</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0x147c4e72</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h6</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xb9807785</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h7</span> <span style="color:#f92672">:=</span> uint32(<span style="color:#ae81ff">0xafee47bb</span>)
+</span></span></code></pre></div><p>Reversing a sha256 hash would mean performing calculations to get back to the original 8 values of <code>h0..h8</code>. Because sha256 incorporates parts of the message in to its calculation, we would also reveal the message in the process.</p>
+<p>let&rsquo;s simplify the task by just trying to reverse <code>h0</code>. We can look at the steps taken to arrive at <code>h0</code> by following the specification<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> backwards. <code>h0</code> is the addition of the previous value of <code>h0</code> and a calculated variable <code>a</code>. What was the previous value of <code>h0</code>? We have no idea! We&rsquo;ve already hit a road block before we began!</p>
+<p>This can be simplified further. <code>h0</code> + <code>a</code> happens once for each 512 bits in the message schedule. For messages smaller than 512 bits, we can assume <code>h0</code> is the initial value <code>0x6a09e667</code>. We&rsquo;ll guess the message is smaller than 512 bits. This let&rsquo;s us turn our attention to reversing the variable <code>a</code>. It gets calculated as such:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">uint32</span>, <span style="color:#a6e22e">shift</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">uint32</span> {
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> (<span style="color:#a6e22e">value</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">shift</span>) | (<span style="color:#a6e22e">value</span> <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#ae81ff">32</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">shift</span>))
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// the 64 iteration of the sha256 algorithm, which gives the final value of `a`</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// the 64th iteration of the sha256 algorithm, which gives the final value of `a`</span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">6</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">11</span>) ^ <span style="color:#a6e22e">rightrotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">25</span>)
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">ch</span> <span style="color:#f92672">:=</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">f</span>) ^ ((^<span style="color:#a6e22e">e</span>) <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">g</span>)
 </span></span><span style="display:flex;"><span>
@@ -283,18 +290,25 @@ h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">temp2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s0</span> <span style="color:#f92672">+</span> uint32(<span style="color:#a6e22e">maj</span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">temp1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp2</span>
-</span></span></code></pre></div><p>We&rsquo;ve stumbled in to a endless maze of misdirection! We have to know all of the previous values of <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>, <code>e</code>, <code>f</code>, <code>g</code> and <code>h</code> along with the 32 bit value in the message schedule <code>w</code> at index 63. Ignoring the 8 variables <code>a..g</code>,  Let&rsquo;s consider finding just the value of <code>w[63]</code>. That was originally calculated as:</p>
+</span></span></code></pre></div><p>We&rsquo;ve stumbled in to a endless maze of misdirection! We have to know all of the previous values of <code>a</code>, <code>b</code>, <code>c</code>, <code>e</code>, <code>f</code>, <code>g</code> and <code>h</code> along with the 32 bit value in the message schedule <code>w</code> at index 63. Ignoring the 8 variables <code>a..g</code>,  Let&rsquo;s consider finding just the value of <code>w[63]</code>. That was originally calculated as:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">s0</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>], <span style="color:#ae81ff">7</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>], <span style="color:#ae81ff">18</span>) ^ (<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>] <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">3</span>)
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>], <span style="color:#ae81ff">17</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>], <span style="color:#ae81ff">19</span>) ^ (<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>] <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">10</span>) 
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">w63</span> = <span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">47</span>] <span style="color:#f92672">+</span> <span style="color:#a6e22e">s0</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">56</span>] <span style="color:#f92672">+</span> <span style="color:#a6e22e">s1</span>
 </span></span></code></pre></div><p>and following the specification of the algorithm, to know <code>w[48]</code> we need to know <code>w[33]</code>, and to know <code>w[33]</code> we need to know <code>w[18]</code>, and to know <code>w[18]</code>, we need to know <code>w[2]</code> which is potentially a 32 bit chunk of the original message!</p>
-<p>It doesn&rsquo;t end here, even if we guessed these values, we would have to guess them <em>63 more times</em> and hope that values <code>h0...h8</code> align with their initially instantiated values. Remember, we&rsquo;ve simplified this so that only 1 block is involved. There could be multiple blocks!</p>
-<p>This leads to a second strength of the sha256 algorithm. Not only is it hard to reverse, it&rsquo;s difficult to find other messages that would result in the same hash, i.e, a collision.</p>
+<p>It doesn&rsquo;t end here, even if we guessed these values, we would have to guess them <em>63 more times</em> and hope that values <code>h0...h8</code> align with their initially instantiated values. Remember, we&rsquo;ve simplified this so that only 1 block is involved. There could be multiple blocks! Essentially, whether brute forcing forwards or backwards, you must guess the original message.</p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final">https://csrc.nist.gov/pubs/fips/180-4/upd1/final</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
 
 </content>
 <p>
   
-  <a href="http://localhost:1313/tags/golang/">#Golang</a>
+  <a href="https://tscales.github.io/tags/golang/">#Golang</a>
   
 </p>
 
