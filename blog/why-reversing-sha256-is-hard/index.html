@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why Reversing Sha256 Is Hard | Ty Scales</title>
+<meta name="title" content="Why Reversing Sha256 Is Hard" />
+<meta name="description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter &lsquo;a&rsquo;
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+can also be represented like this in psuedo-code
+h0 := 0xca978112 
+h1 := 0xca1bbdca
+h2 := 0xfac231b3
+h3 := 0x9a23dc4d
+h4 := 0xa786eff8
+h5 := 0x147c4e72
+h6 := 0xb9807785
+h7 := 0xafee47bb
+Let&rsquo;s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We&rsquo;ve already hit a road block before we&rsquo;ve began!" />
+<meta name="keywords" content="golang," />
+
+
+<meta property="og:url" content="http://localhost:1313/blog/why-reversing-sha256-is-hard/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Why Reversing Sha256 Is Hard">
+  <meta property="og:description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
+h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-08-17T18:20:47-07:00">
+    <meta property="article:modified_time" content="2025-08-17T18:20:47-07:00">
+    <meta property="article:tag" content="Golang">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Why Reversing Sha256 Is Hard">
+  <meta name="twitter:description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
+h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+
+
+
+
+  <meta itemprop="name" content="Why Reversing Sha256 Is Hard">
+  <meta itemprop="description" content="A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter ‘a’
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb can also be represented like this in psuedo-code
+h0 := 0xca978112 h1 := 0xca1bbdca h2 := 0xfac231b3 h3 := 0x9a23dc4d h4 := 0xa786eff8 h5 := 0x147c4e72 h6 := 0xb9807785 h7 := 0xafee47bb Let’s focus on just reversing h0. how did we arrive at this number? The sha256 calcualtes h0 as the addition of the previous value of h0 with a value a. What was the previous value of h0? We have no idea! We’ve already hit a road block before we’ve began!">
+  <meta itemprop="datePublished" content="2025-08-17T18:20:47-07:00">
+  <meta itemprop="dateModified" content="2025-08-17T18:20:47-07:00">
+  <meta itemprop="wordCount" content="471">
+  <meta itemprop="keywords" content="Golang">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #333;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #777;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Why Reversing Sha256 Is Hard</h1>
+<p>
+  <i>
+    <time datetime='2025-08-17' pubdate>
+      17 Aug, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>A sha256 digest is the concatination of 8 32 bit integers represented in hexadecimal form. The digest for the letter &lsquo;a&rsquo;</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb</span>
+</span></span></code></pre></div><p>can also be represented like this in psuedo-code</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">h0</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xca978112</span> 
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xca1bbdca</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h2</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xfac231b3</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h3</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0x9a23dc4d</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h4</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xa786eff8</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h5</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0x147c4e72</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h6</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xb9807785</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">h7</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0xafee47bb</span>
+</span></span></code></pre></div><p>Let&rsquo;s focus on just reversing <code>h0</code>. how did we arrive at this number? The sha256 calcualtes <code>h0</code> as the addition of the previous value of <code>h0</code> with a value <code>a</code>. What was the previous value of h0? We have no idea! We&rsquo;ve already hit a road block before we&rsquo;ve began!</p>
+<p>We can try simplifying the problem. Assume the message is small enough to fit in to 512 bits, this is the size of a block that sha256 works on. Since <code>h0 + a</code> happens once per block, <code>h0</code> would be its initial starting value: <code>0x6a09e667</code></p>
+<p>This let&rsquo;s us turn out attention on to how <code>a</code> was calculated:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">uint32</span>, <span style="color:#a6e22e">shift</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">uint32</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> (<span style="color:#a6e22e">value</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">shift</span>) | (<span style="color:#a6e22e">value</span> <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#ae81ff">32</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">shift</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// the 64 iteration of the sha256 algorithm, which gives the final value of `a`</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">6</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">11</span>) ^ <span style="color:#a6e22e">rightrotate</span>(<span style="color:#a6e22e">e</span>, <span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ch</span> <span style="color:#f92672">:=</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">f</span>) ^ ((^<span style="color:#a6e22e">e</span>) <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">g</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">temp1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">h</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">s1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">ch</span> <span style="color:#f92672">+</span> uint32(<span style="color:#a6e22e">k</span>[<span style="color:#ae81ff">63</span>]) <span style="color:#f92672">+</span> uint32(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">63</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s0</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">2</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">13</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">22</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">maj</span> <span style="color:#f92672">:=</span> (<span style="color:#a6e22e">a</span> <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">b</span>) ^ (<span style="color:#a6e22e">a</span> <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">c</span>) ^ (<span style="color:#a6e22e">b</span> <span style="color:#f92672">&amp;</span> <span style="color:#a6e22e">c</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">temp2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s0</span> <span style="color:#f92672">+</span> uint32(<span style="color:#a6e22e">maj</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">temp1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">temp2</span>
+</span></span></code></pre></div><p>We&rsquo;ve stumbled in to a endless maze of misdirection! We have to know all of the previous values of <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>, <code>e</code>, <code>f</code>, <code>g</code> and <code>h</code> along with the 32 bit value in the message schedule <code>w</code> at index 63. Ignoring the 8 variables <code>a..g</code>,  Let&rsquo;s consider finding just the value of <code>w[63]</code>. That was originally calculated as:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#a6e22e">s0</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>], <span style="color:#ae81ff">7</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>], <span style="color:#ae81ff">18</span>) ^ (<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">48</span>] <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>], <span style="color:#ae81ff">17</span>) ^ <span style="color:#a6e22e">rightRotate</span>(<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>], <span style="color:#ae81ff">19</span>) ^ (<span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">61</span>] <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">10</span>) 
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">w63</span> = <span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">47</span>] <span style="color:#f92672">+</span> <span style="color:#a6e22e">s0</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">w</span>[<span style="color:#ae81ff">56</span>] <span style="color:#f92672">+</span> <span style="color:#a6e22e">s1</span>
+</span></span></code></pre></div><p>and following the specification of the algorithm, to know <code>w[48]</code> we need to know <code>w[33]</code>, and to know <code>w[33]</code> we need to know <code>w[18]</code>, and to know <code>w[18]</code>, we need to know <code>w[2]</code> which is potentially a 32 bit chunk of the original message!</p>
+<p>It doesn&rsquo;t end here, even if we guessed these values, we would have to guess them <em>63 more times</em> and hope that values <code>h0...h8</code> align with their initially instantiated values. Remember, we&rsquo;ve simplified this so that only 1 block is involved. There could be multiple blocks!</p>
+<p>This leads to a second strength of the sha256 algorithm. Not only is it hard to reverse, it&rsquo;s difficult to find other messages that would result in the same hash, i.e, a collision.</p>
+
+</content>
+<p>
+  
+  <a href="http://localhost:1313/tags/golang/">#Golang</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
