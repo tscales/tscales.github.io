@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Base 2 Primes | Ty Scales</title>
+<meta name="title" content="Base 2 Primes" />
+<meta name="description" content="In the base 10 number system, All prime numbers greater than 10 end in 1,3,7, or 9. What if we looked at primes in base 2, does that reveal patterns of its own?
+In Go, the math/big package provides a ProbablyPrime method which accurately reports primes up to $2^{64}$
+import (
+    &#34;math/big&#34;
+    &#34;fmt&#34;
+)
+func printPrimesTo(n int64) {
+	var i int64
+	for i &lt;= n {
+		isPrime := big.NewInt(i).ProbablyPrime(1)
+		if isPrime {
+			fmt.Printf(&#34;%d: %b\n&#34;, i, i)
+		}
+		i&#43;&#43;
+	}
+}
+The prime numbers up to 100 represented in base 2:" />
+<meta name="keywords" content="golang," />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/base-2-primes/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Base 2 Primes">
+  <meta property="og:description" content="In the base 10 number system, All prime numbers greater than 10 end in 1,3,7, or 9. What if we looked at primes in base 2, does that reveal patterns of its own?
+In Go, the math/big package provides a ProbablyPrime method which accurately reports primes up to $2^{64}$
+import ( &#34;math/big&#34; &#34;fmt&#34; ) func printPrimesTo(n int64) { var i int64 for i &lt;= n { isPrime := big.NewInt(i).ProbablyPrime(1) if isPrime { fmt.Printf(&#34;%d: %b\n&#34;, i, i) } i&#43;&#43; } } The prime numbers up to 100 represented in base 2:">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-11-02T19:10:06-08:00">
+    <meta property="article:modified_time" content="2025-11-02T19:10:06-08:00">
+    <meta property="article:tag" content="Golang">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Base 2 Primes">
+  <meta name="twitter:description" content="In the base 10 number system, All prime numbers greater than 10 end in 1,3,7, or 9. What if we looked at primes in base 2, does that reveal patterns of its own?
+In Go, the math/big package provides a ProbablyPrime method which accurately reports primes up to $2^{64}$
+import ( &#34;math/big&#34; &#34;fmt&#34; ) func printPrimesTo(n int64) { var i int64 for i &lt;= n { isPrime := big.NewInt(i).ProbablyPrime(1) if isPrime { fmt.Printf(&#34;%d: %b\n&#34;, i, i) } i&#43;&#43; } } The prime numbers up to 100 represented in base 2:">
+
+
+
+
+  <meta itemprop="name" content="Base 2 Primes">
+  <meta itemprop="description" content="In the base 10 number system, All prime numbers greater than 10 end in 1,3,7, or 9. What if we looked at primes in base 2, does that reveal patterns of its own?
+In Go, the math/big package provides a ProbablyPrime method which accurately reports primes up to $2^{64}$
+import ( &#34;math/big&#34; &#34;fmt&#34; ) func printPrimesTo(n int64) { var i int64 for i &lt;= n { isPrime := big.NewInt(i).ProbablyPrime(1) if isPrime { fmt.Printf(&#34;%d: %b\n&#34;, i, i) } i&#43;&#43; } } The prime numbers up to 100 represented in base 2:">
+  <meta itemprop="datePublished" content="2025-11-02T19:10:06-08:00">
+  <meta itemprop="dateModified" content="2025-11-02T19:10:06-08:00">
+  <meta itemprop="wordCount" content="366">
+  <meta itemprop="keywords" content="Golang">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #1b1b20;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #252525;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Base 2 Primes</h1>
+<p>
+  <i>
+    <time datetime='2025-11-02' pubdate>
+      02 Nov, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>In the base 10 number system, All prime numbers greater than 10 end in 1,3,7, or 9. What if we looked at primes in base 2, does that reveal patterns of its own?</p>
+<p>In Go, the <code>math/big</code> package provides a <code>ProbablyPrime</code> method which accurately reports primes up to $2^{64}$</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;math/big&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">printPrimesTo</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int64</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">n</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">isPrime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">big</span>.<span style="color:#a6e22e">NewInt</span>(<span style="color:#a6e22e">i</span>).<span style="color:#a6e22e">ProbablyPrime</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isPrime</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%d: %b\n&#34;</span>, <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">i</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The prime numbers up to 100 represented in base 2:</p>
+<pre tabindex="0"><code>2:   10
+3:   11
+5:   101
+7:   111
+11:  1011
+13:  1101
+17:  10001
+19:  10011
+23:  10111
+29:  11101
+31:  11111
+37:  100101
+41:  101001
+43:  101011
+47:  101111
+53:  110101
+59:  111011
+61:  111101
+67:  1000011
+71:  1000111
+73:  1001001
+79:  1001111
+83:  1010011
+89:  1011001
+97:  1100001
+</code></pre><p>All of the primes have their least significant bit set. Numbers without the least bit set are always divisible by two. Not all numbers that have the least bit set are prime. Nine (1001 in base 2) is not prime.</p>
+<p>Occasionally, a prime number in base 2 consists of all ones.</p>
+<pre tabindex="0"><code>1:   1
+3:   11
+7:   111
+31:  1111
+127: 1111111
+</code></pre><p>In base 2, any number equal to $2^{n}-1$ will be a number of all ones. When $2^{n}-1$ is prime for some n, it&rsquo;s called a Mersenne prime. Computers work primarily well in base 2 and makes searching these types of primes faster than others. As a result, the largest known primes are Mersenne primes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#75715e">// Test the primality of 2^n-1 using the Lucas-Lehmer primalty test</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">LucasLehmer</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int64</span>) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">s</span> <span style="color:#66d9ef">int64</span> = <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">m</span> = int64(<span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">Pow</span>(<span style="color:#ae81ff">2</span>, float64(<span style="color:#a6e22e">n</span>))) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> int64(<span style="color:#ae81ff">64</span>); <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span><span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">s</span> = ((<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">s</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">%</span> <span style="color:#a6e22e">m</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The Great Internet Mersenne Prime Search (GIMPS) made use of the Lucas-Lehmer primality test from 1996-2018. 52 Mersenne primes are known. The largest, discovered in 2024, contains 41 million digits.</p>
+<p>For comparison. A 64 bit integer can hold a max number of $2^{64}-1$ (18,446,744,073,709,551,615). A very large number, but only 20 digits long.</p>
+
+</content>
+<p>
+  
+  <a href="https://tscales.github.io/tags/golang/">#Golang</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[','\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+</script>
+</footer>
+
+    
+</body>
+
+</html>

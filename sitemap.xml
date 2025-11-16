@@ -3,10 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://tscales.github.io/</loc>
-    <lastmod>2025-09-21T21:52:22-07:00</lastmod>
+    <lastmod>2025-11-02T19:10:06-08:00</lastmod>
+  </url><url>
+    <loc>https://tscales.github.io/blog/base-2-primes/</loc>
+    <lastmod>2025-11-02T19:10:06-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/</loc>
-    <lastmod>2025-09-21T21:52:22-07:00</lastmod>
+    <lastmod>2025-11-02T19:10:06-08:00</lastmod>
+  </url><url>
+    <loc>https://tscales.github.io/tags/golang/</loc>
+    <lastmod>2025-11-02T19:10:06-08:00</lastmod>
+  </url><url>
+    <loc>https://tscales.github.io/tags/</loc>
+    <lastmod>2025-11-02T19:10:06-08:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/tags/latin/</loc>
     <lastmod>2025-09-21T21:52:22-07:00</lastmod>
@@ -14,14 +23,8 @@
     <loc>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/lawrence-of-spalato/</loc>
     <lastmod>2025-09-21T21:52:22-07:00</lastmod>
   </url><url>
-    <loc>https://tscales.github.io/tags/</loc>
-    <lastmod>2025-09-21T21:52:22-07:00</lastmod>
-  </url><url>
     <loc>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/pincius-diploma/</loc>
     <lastmod>2025-08-22T11:07:33-07:00</lastmod>
-  </url><url>
-    <loc>https://tscales.github.io/tags/golang/</loc>
-    <lastmod>2025-08-17T18:20:47-07:00</lastmod>
   </url><url>
     <loc>https://tscales.github.io/blog/why-reversing-sha256-is-hard/</loc>
     <lastmod>2025-08-17T18:20:47-07:00</lastmod>
