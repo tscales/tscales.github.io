@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Listening for TLS Handshakes | Ty Scales</title>
+<meta name="title" content="Listening for TLS Handshakes" />
+<meta name="description" content="Golang&rsquo;s standard library has support for TLS servers out of the box. For testing purposes, you can generate a cert with openssl
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out server.crt -keyout server.key
+and use http.ListenAndServeTLS to spin up a sever
+package main
+
+import (
+	&#34;fmt&#34;
+	&#34;net/http&#34;
+)
+
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc(&#34;GET /&#34;, func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, &#34;welcome to my secure server\n&#34;)
+	})
+
+	fmt.Println(&#34;starting server&#34;)
+	err := http.ListenAndServeTLS(&#34;:443&#34;, &#34;server.crt&#34;, &#34;server.key&#34;, mux)
+	if err != nil {
+		fmt.Printf(&#34;Server failed: %s\n&#34;, err)
+	}
+}
+confirm that it works with curl." />
+<meta name="keywords" content="golang," />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/listening-for-tls-handshakes/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Listening for TLS Handshakes">
+  <meta property="og:description" content="Golang’s standard library has support for TLS servers out of the box. For testing purposes, you can generate a cert with openssl
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out server.crt -keyout server.key and use http.ListenAndServeTLS to spin up a sever
+package main import ( &#34;fmt&#34; &#34;net/http&#34; ) func main() { mux := http.NewServeMux() mux.HandleFunc(&#34;GET /&#34;, func(w http.ResponseWriter, req *http.Request) { fmt.Fprintf(w, &#34;welcome to my secure server\n&#34;) }) fmt.Println(&#34;starting server&#34;) err := http.ListenAndServeTLS(&#34;:443&#34;, &#34;server.crt&#34;, &#34;server.key&#34;, mux) if err != nil { fmt.Printf(&#34;Server failed: %s\n&#34;, err) } } confirm that it works with curl.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-12-27T12:45:15-08:00">
+    <meta property="article:modified_time" content="2025-12-27T12:45:15-08:00">
+    <meta property="article:tag" content="Golang">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Listening for TLS Handshakes">
+  <meta name="twitter:description" content="Golang’s standard library has support for TLS servers out of the box. For testing purposes, you can generate a cert with openssl
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out server.crt -keyout server.key and use http.ListenAndServeTLS to spin up a sever
+package main import ( &#34;fmt&#34; &#34;net/http&#34; ) func main() { mux := http.NewServeMux() mux.HandleFunc(&#34;GET /&#34;, func(w http.ResponseWriter, req *http.Request) { fmt.Fprintf(w, &#34;welcome to my secure server\n&#34;) }) fmt.Println(&#34;starting server&#34;) err := http.ListenAndServeTLS(&#34;:443&#34;, &#34;server.crt&#34;, &#34;server.key&#34;, mux) if err != nil { fmt.Printf(&#34;Server failed: %s\n&#34;, err) } } confirm that it works with curl.">
+
+
+
+
+  <meta itemprop="name" content="Listening for TLS Handshakes">
+  <meta itemprop="description" content="Golang’s standard library has support for TLS servers out of the box. For testing purposes, you can generate a cert with openssl
+openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out server.crt -keyout server.key and use http.ListenAndServeTLS to spin up a sever
+package main import ( &#34;fmt&#34; &#34;net/http&#34; ) func main() { mux := http.NewServeMux() mux.HandleFunc(&#34;GET /&#34;, func(w http.ResponseWriter, req *http.Request) { fmt.Fprintf(w, &#34;welcome to my secure server\n&#34;) }) fmt.Println(&#34;starting server&#34;) err := http.ListenAndServeTLS(&#34;:443&#34;, &#34;server.crt&#34;, &#34;server.key&#34;, mux) if err != nil { fmt.Printf(&#34;Server failed: %s\n&#34;, err) } } confirm that it works with curl.">
+  <meta itemprop="datePublished" content="2025-12-27T12:45:15-08:00">
+  <meta itemprop="dateModified" content="2025-12-27T12:45:15-08:00">
+  <meta itemprop="wordCount" content="389">
+  <meta itemprop="keywords" content="Golang">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #1b1b20;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #252525;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Listening for TLS Handshakes</h1>
+<p>
+  <i>
+    <time datetime='2025-12-27' pubdate>
+      27 Dec, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Golang&rsquo;s standard library has support for TLS servers out of the box. For testing purposes, you can generate a cert with openssl</p>
+<pre tabindex="0"><code>openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out server.crt -keyout server.key
+</code></pre><p>and use <code>http.ListenAndServeTLS</code> to spin up a sever</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mux</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;GET /&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintf</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;welcome to my secure server\n&#34;</span>)
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;starting server&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServeTLS</span>(<span style="color:#e6db74">&#34;:443&#34;</span>, <span style="color:#e6db74">&#34;server.crt&#34;</span>, <span style="color:#e6db74">&#34;server.key&#34;</span>, <span style="color:#a6e22e">mux</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Server failed: %s\n&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>confirm that it works with curl.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -k https://localhost:443
+</span></span></code></pre></div><p>You can also pass a <code>Config</code> from the  <code>crypto/tls</code> package for fine grained control of what ciphers you want to use. Here is a minimal example where we tell the server to only support X25519 for key exchange.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Addr</span>:    <span style="color:#e6db74">&#34;:443&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">mux</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">TLSConfig</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">Config</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">MinVersion</span>:       <span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">VersionTLS13</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">CurvePreferences</span>: []<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">CurveID</span>{<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">X25519</span>},
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">CipherSuites</span>:     []<span style="color:#66d9ef">uint16</span>{<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">TLS_AES_128_GCM_SHA256</span>},
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><h3 id="listening-for-clienthello">Listening for ClientHello</h3>
+<p>The <code>tls.Config</code> struct allows you to define a function that runs every time a ClientHello is received by the server.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">TlsConfig</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">Config</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">GetConfigForClient</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">hello</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">ClientHelloInfo</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;received client hello from: %s\n&#34;</span>, <span style="color:#a6e22e">hello</span>.<span style="color:#a6e22e">Conn</span>.<span style="color:#a6e22e">RemoteAddr</span>())
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;client supports the following cipherSuites: %x&#34;</span>, <span style="color:#a6e22e">hello</span>.<span style="color:#a6e22e">CipherSuites</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Or if you prefer, you can listen at the byte level with our own custom listener. Following the types from the TLS 1.3 <a href="https://datatracker.ietf.org/doc/html/rfc8446#appendix-B.1">RFC</a>: look for a handshake record type, starting with 22 (hex: 0x16), and then checking that the message type is of type client_hello (0x01)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ContentTypeHandshake</span> = <span style="color:#ae81ff">0x16</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">HandshakeClientHello</span> = <span style="color:#ae81ff">0x01</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">handshakeConn</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Conn</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">handshakeConn</span>) <span style="color:#a6e22e">Read</span>(<span style="color:#a6e22e">b</span> []<span style="color:#66d9ef">byte</span>) (<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Conn</span>.<span style="color:#a6e22e">Read</span>(<span style="color:#a6e22e">b</span>)
+</span></span><span style="display:flex;"><span>    	<span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Conn</span>.<span style="color:#a6e22e">Read</span>(<span style="color:#a6e22e">b</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span> &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">b</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#a6e22e">ContentTypeHandshake</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">handshake</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>[<span style="color:#ae81ff">5</span>:]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">handshake</span>[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#a6e22e">HandshakeClientHello</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;received clientHello!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">handshakeListener</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listener</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">handshakeListener</span>) <span style="color:#a6e22e">Accept</span>() (<span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Conn</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">c</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Listener</span>.<span style="color:#a6e22e">Accept</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">handshakeConn</span>{<span style="color:#a6e22e">c</span>}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Then manually define your listener and pass to <code>server.ServeTLS</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Go" data-lang="Go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">listener</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listen</span>(<span style="color:#e6db74">&#34;tcp&#34;</span>, <span style="color:#e6db74">&#34;:443&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">handshakeListener</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">handshakeListener</span>{<span style="color:#a6e22e">listener</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Addr</span>:    <span style="color:#e6db74">&#34;:443&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">mux</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">TLSConfig</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">Config</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">MinVersion</span>:       <span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">VersionTLS13</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">CurvePreferences</span>: []<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">CurveID</span>{<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">X25519</span>},
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">CipherSuites</span>:     []<span style="color:#66d9ef">uint16</span>{<span style="color:#a6e22e">tls</span>.<span style="color:#a6e22e">TLS_AES_128_GCM_SHA256</span>},
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">ServeTLS</span>(<span style="color:#a6e22e">handshakeListener</span>, <span style="color:#e6db74">&#34;server.crt&#34;</span>, <span style="color:#e6db74">&#34;server.key&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+</content>
+<p>
+  
+  <a href="https://tscales.github.io/tags/golang/">#Golang</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
