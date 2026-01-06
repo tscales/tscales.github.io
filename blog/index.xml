@@ -6,8 +6,15 @@
     <description>Recent content in Blog on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Jan 2026 12:12:25 -0800</lastBuildDate>
+    <lastBuildDate>Sun, 04 Jan 2026 17:56:34 -0800</lastBuildDate>
     <atom:link href="https://tscales.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Disce Haec Verba: a Latin version of LTWF</title>
+      <link>https://tscales.github.io/blog/natural-semantic-metalanguage/disce-haec-verba/</link>
+      <pubDate>Sun, 04 Jan 2026 17:56:34 -0800</pubDate>
+      <guid>https://tscales.github.io/blog/natural-semantic-metalanguage/disce-haec-verba/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;../meta&#34;&gt;Natural Semantic Metalanguage&lt;/a&gt;(NSM) posits that all of a language can be described with a small set of its base words. David Bollock&amp;rsquo;s &lt;a href=&#34;https://learnthesewordsfirst.com&#34;&gt;Learn These Words First&lt;/a&gt;(LTWF) demonstrates how a set of 300 English words can define 2,000 words.&lt;/p&gt;&#xA;&lt;p&gt;A Latin list of base words has recently been published by Ignacio Aragües y Oroz&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;. In this post, I&amp;rsquo;ll attempt to translate Lesson 1 of LTWF in to Latin equivalents using these words.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Natural Semantic Metalanguage</title>
       <link>https://tscales.github.io/blog/natural-semantic-metalanguage/meta/</link>
