@@ -6,8 +6,15 @@
     <description>Recent content in Blog on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 31 Jan 2026 18:56:16 -0800</lastBuildDate>
+    <lastBuildDate>Sat, 31 Jan 2026 22:00:35 -0800</lastBuildDate>
     <atom:link href="https://tscales.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Carmen Miserabile</title>
+      <link>https://tscales.github.io/blog/latin/carmen-miserabile/</link>
+      <pubDate>Sat, 31 Jan 2026 22:00:35 -0800</pubDate>
+      <guid>https://tscales.github.io/blog/latin/carmen-miserabile/</guid>
+      <description>&lt;p&gt;&lt;em&gt;Carmen miserabile super destructione regni Hungariae per Tartaros&lt;/em&gt; is a latin account of the mongol invasion of Hungary. The work has been attributed to &lt;a href=&#34;https://tscales.github.io/illyricum-sacrum/volume3/roger&#34;&gt;Roger of Torre Maggiore&lt;/a&gt;. The original work is now lost, but Johannes de Thurocz appended it to his 15th century &lt;em&gt;Chronica Hungarorum&lt;/em&gt;.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;let all know that I do not say this rashly, for whoever falls into the hands of the Tartars, if he had not been born, would be better off, and will feel that he is not being held by the Tartars, but in Tartarus. I say this as I have experienced it. For I was among them for a time and a half, in which death was a consolation, as life was a punishment.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Roger of Torre Maggiore</title>
       <link>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/roger/</link>
@@ -293,7 +300,7 @@
       <link>https://tscales.github.io/blog/latin/latin/</link>
       <pubDate>Tue, 17 Sep 2024 19:42:30 -0700</pubDate>
       <guid>https://tscales.github.io/blog/latin/latin/</guid>
-      <description>&lt;p&gt;This page explores latin texts, primarily those with no English translation.&lt;/p&gt;&#xA;&lt;h3 id=&#34;1600s&#34;&gt;1600s&lt;/h3&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../illyricum-sacrum&#34;&gt;Illyricum Sacrum&lt;/a&gt;: an 8 volume work on the history of church in former Roman province of Illyricum.&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;Imperatorum Romanorum Numismata&lt;/em&gt;, Francesco Maria Mezzabarba&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;Carniola antiqua et nova&lt;/em&gt;, Ludwig Schönleben&lt;/p&gt;&#xA;&lt;p&gt;&lt;em&gt;De Regno Dalmatiae et Croatiae&lt;/em&gt;, Johannes Lucius&lt;/p&gt;&#xA;&lt;h3 id=&#34;1200s&#34;&gt;1200s&lt;/h3&gt;&#xA;&lt;p&gt;&lt;em&gt;Historia Salonitana&lt;/em&gt;, Thomas the Archdeacon&lt;/p&gt;</description>
+      <description>&lt;p&gt;Here is a catalogue of the Latin works I&amp;rsquo;ve been writing about.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../illyricum-sacrum&#34;&gt;Illyricum Sacrum&lt;/a&gt;: an 8 volume work on the history of church in former Roman province of Illyricum.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../carmen-miserabile&#34;&gt;Carmen Miserabile&lt;/a&gt;: Roger of Torre Maggiore&amp;rsquo;s first hand account of the Mongol Invasion of Hungary.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Bitwise Addition</title>
