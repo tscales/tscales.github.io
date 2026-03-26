@@ -6,8 +6,15 @@
     <description>Recent content on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 10 Feb 2026 17:23:39 -0800</lastBuildDate>
+    <lastBuildDate>Tue, 24 Mar 2026 17:00:08 -0700</lastBuildDate>
     <atom:link href="https://tscales.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>File Descriptors</title>
+      <link>https://tscales.github.io/blog/file-descriptors/</link>
+      <pubDate>Tue, 24 Mar 2026 17:00:08 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/file-descriptors/</guid>
+      <description>&lt;p&gt;File descriptors are integer values that processes and the linux kernel use to manage open files. Any process that is spawned starts with 3 file descriptors: stdin(0), stdout(1), and stderr(2). In bash we can list the file descriptors of an empty process like this.&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sleep &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &amp;amp; ls -l /proc/$&lt;span style=&#34;color:#ae81ff&#34;&gt;\!&lt;/span&gt;/fd&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;1&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4473&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;total &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lrwx------  &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; -&amp;gt; /dev/pts/0&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lrwx------  &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; -&amp;gt; /dev/pts/0&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;lrwx------  &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; -&amp;gt; /dev/pts/0&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;What happens when we open a new file? The process tells the kernel &amp;ldquo;I&amp;rsquo;d like to open a file&amp;rdquo;, and the kernel says &amp;ldquo;It&amp;rsquo;s now open, when you want to write to it, just refer to it by this descriptor value N&amp;rdquo;.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Dominic Luccari</title>
       <link>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/dominic/</link>
