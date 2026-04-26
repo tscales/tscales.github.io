@@ -6,8 +6,22 @@
     <description>Recent content in Latin on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Apr 2026 13:58:39 -0700</lastBuildDate>
+    <lastBuildDate>Sat, 25 Apr 2026 10:02:52 -0700</lastBuildDate>
     <atom:link href="https://tscales.github.io/tags/latin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Oratio Habita in Prima Sessione Lateranensis Concilii</title>
+      <link>https://tscales.github.io/blog/latin/oratio-habita-in-prima-sessione-lateranensis-concilii/</link>
+      <pubDate>Sat, 25 Apr 2026 10:02:52 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/latin/oratio-habita-in-prima-sessione-lateranensis-concilii/</guid>
+      <description>&lt;p&gt;The text, published by Giacomo Mazzocchi in 1512, opens with a letter by Toma Niger to Marko Marulić praising the opening speech given by Bernard Zanne at the Fifth Lateran Council. The text of the speech then follows. Bernard calls for unity among Christian Nations and to address the threat of the Ottoman&amp;rsquo;s, whose border&amp;rsquo;s where now at the edge of his Diocese in Spalato. In Bernards Speech, I&amp;rsquo;ve replaced the virgule&amp;rsquo;s with commas and expanded abbreviations where possible. I&amp;rsquo;ve separated the text by pages as they appear in the text. The transcription is still in want of periods and paragraph breaks.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Bernard Zanne</title>
+      <link>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/bernard-zanne/</link>
+      <pubDate>Fri, 24 Apr 2026 17:44:28 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/bernard-zanne/</guid>
+      <description>&lt;p&gt;This is part 31 in a series on Daniel Farlati&amp;rsquo;s &lt;a href=&#34;../../&#34;&gt;Illyricum Sacrum&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;p&gt;Bernad Zanne (lt. Bernardius Zannius. Also known as Bernardi Zane) was a highly educated priest who enjoyed the favor of both Pope Alexander VI and Leonardo Loredan. Alexander promised to make him the next Archbishop of Spalato. He assumed the role in 1503.&lt;/p&gt;&#xA;&lt;p&gt;Much of his time in Spalato was spent dealing with Ottoman raids. In 1512, He was summoned to the Fifth Lateran Council and delivered a speech calling for Christian nations to unify against the threat of the Ottomans. Toma Niger, who had accompanied Bernard to Rome, sent the speech to Marco Marulić&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; along with a letter of praise for it. Toma&amp;rsquo;s Letter and Bernard&amp;rsquo;s speech were published by Giacomo Mazzocchi in &lt;a href=&#34;../../../oratio-habita-in-prima-sessione-lateranensis-concilii&#34;&gt;Oratio Habita in Prima Sessione Lateranensis Concilii&lt;/a&gt;.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Bartholomew Zabarella</title>
       <link>https://tscales.github.io/blog/latin/illyricum-sacrum/volume3/bartholomew/</link>
@@ -258,7 +272,7 @@
       <link>https://tscales.github.io/blog/latin/latin/</link>
       <pubDate>Tue, 17 Sep 2024 19:42:30 -0700</pubDate>
       <guid>https://tscales.github.io/blog/latin/latin/</guid>
-      <description>&lt;p&gt;Here is a catalogue of the Latin works I&amp;rsquo;ve been writing about.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../illyricum-sacrum&#34;&gt;Illyricum Sacrum&lt;/a&gt;: an 8 volume work on the history of church in former Roman province of Illyricum.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../carmen-miserabile&#34;&gt;Carmen Miserabile&lt;/a&gt;: Roger of Torre Maggiore&amp;rsquo;s first hand account of the Mongol Invasion of Hungary.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Here is a catalogue of the Latin works I&amp;rsquo;ve been writing about.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../illyricum-sacrum&#34;&gt;Illyricum Sacrum&lt;/a&gt;: an 8 volume work on the history of church in former Roman province of Illyricum.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../carmen-miserabile&#34;&gt;Carmen Miserabile&lt;/a&gt;: Roger of Torre Maggiore&amp;rsquo;s first hand account of the Mongol Invasion of Hungary.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;../oratio-habita-in-prima-sessione-Lateranensis-Concilii&#34;&gt;Oratio Habita in Prima Sessione Lateranensis Concilii&lt;/a&gt;: A speech given by Bernard Zanne at the Fifth Lateran Council in 1512.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
