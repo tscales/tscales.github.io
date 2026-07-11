@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ISLP Notes - Chapter 2 | Ty Scales</title>
+<meta name="title" content="ISLP Notes - Chapter 2" />
+<meta name="description" content="The essence of statistical learning is crafting functions that predict or classify things about the world based on a set of inputs.
+How do we craft these functions? You start with one of two options.
+
+
+Make an assumption on the form of your function. Try assuming its a straight line, and then use a procedure to calculate the best slope for that line.
+
+
+Make no assumptions of the data. Algorithms like K nearest neighbors just observe the data nearby to make their predictions." />
+<meta name="keywords" content="machine-learning," />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/machine-learning/islp/ch2-notes/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="ISLP Notes - Chapter 2">
+  <meta property="og:description" content="The essence of statistical learning is crafting functions that predict or classify things about the world based on a set of inputs.
+How do we craft these functions? You start with one of two options.
+Make an assumption on the form of your function. Try assuming its a straight line, and then use a procedure to calculate the best slope for that line.
+Make no assumptions of the data. Algorithms like K nearest neighbors just observe the data nearby to make their predictions.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2026-07-07T19:29:08-07:00">
+    <meta property="article:modified_time" content="2026-07-07T19:29:08-07:00">
+    <meta property="article:tag" content="Machine-Learning">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="ISLP Notes - Chapter 2">
+  <meta name="twitter:description" content="The essence of statistical learning is crafting functions that predict or classify things about the world based on a set of inputs.
+How do we craft these functions? You start with one of two options.
+Make an assumption on the form of your function. Try assuming its a straight line, and then use a procedure to calculate the best slope for that line.
+Make no assumptions of the data. Algorithms like K nearest neighbors just observe the data nearby to make their predictions.">
+
+
+
+
+  <meta itemprop="name" content="ISLP Notes - Chapter 2">
+  <meta itemprop="description" content="The essence of statistical learning is crafting functions that predict or classify things about the world based on a set of inputs.
+How do we craft these functions? You start with one of two options.
+Make an assumption on the form of your function. Try assuming its a straight line, and then use a procedure to calculate the best slope for that line.
+Make no assumptions of the data. Algorithms like K nearest neighbors just observe the data nearby to make their predictions.">
+  <meta itemprop="datePublished" content="2026-07-07T19:29:08-07:00">
+  <meta itemprop="dateModified" content="2026-07-07T19:29:08-07:00">
+  <meta itemprop="wordCount" content="236">
+  <meta itemprop="keywords" content="Machine-Learning">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #1b1b20;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #252525;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>ISLP Notes - Chapter 2</h1>
+<p>
+  <i>
+    <time datetime='2026-07-07' pubdate>
+      07 Jul, 2026
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>The essence of statistical learning is crafting functions that <em>predict</em> or <em>classify</em> things about the world based on a set of inputs.</p>
+<p>How do we craft these functions? You start with one of two options.</p>
+<ol>
+<li>
+<p>Make an assumption on the form of your function. Try assuming its a straight line, and then use a procedure to calculate the best slope for that line.</p>
+</li>
+<li>
+<p>Make no assumptions of the data. Algorithms like K nearest neighbors just observe the data nearby to make their predictions.</p>
+</li>
+</ol>
+<p>How do we know our function is a good? Training Data. If we have data with known outputs, we can compare the difference between our function&rsquo;s answer and the known output. A common algorithm for this is <em>mean squared error</em>.</p>
+<p>MSE is not without limitations. You may have a low error rate against your training data, only to find out the error rate is high in the real world. This is referred to as being <em>overfit</em>.</p>
+<p>Functions with high MSE tend to stem from two factors:</p>
+<ol>
+<li><em>Variance</em>. Does your error rate change when you swap out your training set for another one? Your model may be too flexible.</li>
+<li><em>Bias</em>. Straight lines have a terrible time acting as estimates for parabolas. Your function will be too rigid for such a problem.</li>
+</ol>
+<p>An important trade off arises.</p>
+<ul>
+<li>Rigid models will have less variance, and more bias.</li>
+<li>Flexible models will have more variance, and less bias.</li>
+</ul>
+
+</content>
+<p>
+  
+  <a href="https://tscales.github.io/tags/machine-learning/">#Machine-Learning</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+    
+</body>
+
+</html>
