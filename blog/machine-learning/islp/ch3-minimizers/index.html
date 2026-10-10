@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Finding the minimizers of RSS | Ty Scales</title>
+<meta name="title" content="Finding the minimizers of RSS" />
+<meta name="description" content="In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.
+
+The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are
+$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$
+$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$
+I&rsquo;m going to walk through how these functions are derived from the RSS." />
+<meta name="keywords" content="machine-learning," />
+
+
+<meta property="og:url" content="https://tscales.github.io/blog/machine-learning/islp/ch3-minimizers/">
+  <meta property="og:site_name" content="Ty Scales">
+  <meta property="og:title" content="Finding the minimizers of RSS">
+  <meta property="og:description" content="In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.
+The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are
+$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$
+$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$
+I’m going to walk through how these functions are derived from the RSS.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2026-09-27T20:20:26-07:00">
+    <meta property="article:modified_time" content="2026-09-27T20:20:26-07:00">
+    <meta property="article:tag" content="Machine-Learning">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Finding the minimizers of RSS">
+  <meta name="twitter:description" content="In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.
+The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are
+$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$
+$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$
+I’m going to walk through how these functions are derived from the RSS.">
+
+
+
+
+  <meta itemprop="name" content="Finding the minimizers of RSS">
+  <meta itemprop="description" content="In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.
+The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are
+$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$
+$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$
+I’m going to walk through how these functions are derived from the RSS.">
+  <meta itemprop="datePublished" content="2026-09-27T20:20:26-07:00">
+  <meta itemprop="dateModified" content="2026-09-27T20:20:26-07:00">
+  <meta itemprop="wordCount" content="1106">
+  <meta itemprop="keywords" content="Machine-Learning">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  body {
+    font-family: Verdana, sans-serif;
+    margin: auto;
+    padding: 20px;
+    max-width: 720px;
+    text-align: left;
+    background-color: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: #222;
+  }
+
+  a {
+    color: #3273dc;
+     
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 16px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    padding: 2px 5px;
+    background-color: #f2f2f2;
+  }
+
+  pre code {
+    color: #222;
+    display: block;
+    padding: 20px;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+
+  div.highlight pre {
+    background-color: initial;
+    color: initial;
+  }
+
+  div.highlight code {
+    background-color: unset;
+    color: unset;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: #222;
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px;
+    text-align: center;
+  }
+
+  .helptext {
+    color: #777;
+    font-size: small;
+  }
+
+  .errorlist {
+    color: #eba613;
+    font-size: small;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: #8b6fcb;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #1b1b20;
+      color: #ddd;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b {
+      color: #eee;
+    }
+
+    a {
+      color: #8cc2dd;
+    }
+
+    code {
+      background-color: #252525;
+    }
+
+    pre code {
+      color: #ddd;
+    }
+
+    blockquote {
+      color: #ccc;
+    }
+
+    textarea,
+    input {
+      background-color: #252525;
+      color: #ddd;
+    }
+
+    .helptext {
+      color: #aaa;
+    }
+  }
+
+</style>
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Ty Scales</h2>
+</a>
+<nav><a href="/">Home</a>
+
+
+<a href="/blog">Blog</a>
+
+</nav></header>
+  <main>
+
+<h1>Finding the minimizers of RSS</h1>
+<p>
+  <i>
+    <time datetime='2026-09-27' pubdate>
+      27 Sep, 2026
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.</p>
+<blockquote>
+<p>The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are</p></blockquote>
+<p>$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$</p>
+<p>$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$</p>
+<p>I&rsquo;m going to walk through how these functions are derived from the RSS.</p>
+<p>RSS can be thought of as a function producing the Z axis value in 3d space. It says: &ldquo;given an intercept value plotted on the x axis, and a slope plotted on the y axis, I will give you the value on the z axis.&rdquo; We can isolate the influence of slope and intercept by taking the partial derivatives. Once we&rsquo;ve isolated that, we can solve them for 0 to arrive at the formulas presented in the book.</p>
+<p>Why zero? The lowest RSS value in our 3d space sits at the bottom of a bowl. This has the convenient fact of meaning at the bottom of this bowl the slope of the X and Y axis are zero. Solving for the minimizers gives us the X and Y coordinates where that lowest Z coordinate is.</p>
+<h4 id="taking-the-partial-derivative-of-rss-with-respect-to-hatb_0">Taking the partial derivative of RSS with respect to $\hat{B_0}$</h4>
+<p>RSS is the squared difference between our sample data points and our estimates. It can be written as</p>
+<p>$\sum_{i=1}^{n}(y_i - \hat{y_i})^2$</p>
+<p>where $y_i$ is an observation in the data set, and $\hat{y_i}$ is an estimated value based on some Slope and Intercept for an input value $x$. $\hat{y_i}$ can be expanded to the function that produces its value. $\hat{\beta_0}+\hat{\beta_1}x$</p>
+<p>$\sum_{i=1}^{n}(y_i - (\hat{\beta_0} + \hat{\beta_1}x_i))^2$</p>
+<p>Then the negative sign can be distributed.</p>
+<p>$\sum_{i=1}^{n}(y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2$</p>
+<p>The Sum Rule means we can ignore the summation sign and focus on just solving $(y_i - \hat{\beta_0} - \hat{\beta_1}x_i)^2$.  Since there is an inner term and outer term (squaring the inner term) we can use the chain rule to solve  $y_i - \hat{\beta_0} - \hat{\beta_1}x_i$ first.</p>
+<p>$y_i$ is a constant. set to 0<br>
+$\hat{\beta_i}x_i$ is a constant. set to 0
+$-\hat{\beta_i}$ is a variable, set to -1</p>
+<p>0 - 1 + 0 = -1</p>
+<p>Apply this to the function in the chain rule.</p>
+<p>$f&rsquo;(g(x)) \times g&rsquo;(x) = f&rsquo;(g(x)) \times -1$</p>
+<p>The outer function, which squares the the inner can be written as $f(u) = u^2$. This is then solved with the power rule. $f&rsquo;(u) = 2u$. plug in g(x) for u</p>
+<p>$2(y_i - \beta_0 - \beta_1 x_i) \times -1$</p>
+<p>Simplify $2 \times -1$, and add back the summation sign. The -2 can be moved to the left of the sign.</p>
+<p>$f_{\beta_0}^{\prime} = -2 \sum_{i=1}^{n}(y_i - \hat{\beta_0} - \hat{\beta_1} x_i)$</p>
+<h4 id="taking-the-partial-derivative-of-rss-with-respect-to-hatb_1">Taking the partial derivative of RSS with respect to $\hat{B_1}$</h4>
+<p>Follow the same steps we did as before, this time solving  $y_i - \hat{\beta_0} - \hat{\beta_1}x_i$, with respect to $\beta_1$</p>
+<p>Y is a constant. set to 0.
+$\hat{\beta_0}$ is a constant. set to 0.
+$-\hat{\beta_1}$ is the variable, set to -1.
+x is a multiplier of the variable, simplify $-1 \times x$ to $-x$</p>
+<p>$0 - 0 - x = -x$</p>
+<p>plug back in to the chain formula</p>
+<p>$2(y_i - \hat{\beta_0} - \hat{\beta_1} x_i) \times -x$</p>
+<p>simplify the multipliers 2 and -x</p>
+<p>$-2x(y_i - \hat{\beta_0} - \hat{\beta_1} x_i)$</p>
+<p>Add back the summation sign, again moving the -2 to the left.</p>
+<p>$f_{\beta_1}^{\prime}=-2 \sum_{i=1}^{n}x(y_i - \beta_0 - \beta_1 x_i)$</p>
+<h4 id="derive-the-minimizers-by-setting-the-derivatives-to-zero">Derive the minimizers by setting the derivatives to zero</h4>
+<p>With $\hat{\beta_0}$ plotted on the x axis and $\hat{\beta_1}$ on the Y. Solving the derivatives for zero gives the X, Y coordinates where Z is the smallest value. The smallest Z value will have a tangent plane with a slope of zero along both the X and Y axis.</p>
+<h3 id="the-minimizer-for-hatbeta_0">The minimizer For $\hat{\beta_0}$</h3>
+<p>$-2 \sum_{i=1}^{n}(y_i - \beta_0 - \beta_1 x_i) = 0$</p>
+<p>Divide each side by 0, -2 is canceled out.</p>
+<p>$\sum_{i=1}^{n}(y_i - \beta_0 - \beta_1 x_i) = 0$</p>
+<p>Distribute the summation sign between $y_i$, $\hat{\beta_0}$, and $\hat{\beta_1}x$</p>
+<p>$\sum_{i=1}^{n}y_i - \sum_{i=1}^{n}\hat{\beta_0} - \sum_{i=1}^{n}\hat{\beta_1}x_i = 0$</p>
+<p>For $\sum_{i=1}^{n}\hat{\beta_0}$ , $\hat{\beta_0}$ never changes for n. It is the sum of $\hat{\beta_0}$ <em>n</em> times. It can be rewritten as $n\hat{\beta_0}$</p>
+<p>Similarly, $\hat{\beta_1}$ is constant in $\sum_{i=1}^{n}\hat{\beta_1}x_i$, it can moved to the left of the summation sign.  $\hat{\beta_1}\sum_{i=1}^{n}x_i$</p>
+<p>Our term is now $\sum_{i=1}^{n}y_i - n\hat{\beta_0} - \hat{\beta_1}\sum_{i=1}^{n}x_i = 0$</p>
+<p>Isolate $\hat{\beta_0}$, first by adding $n\hat{\beta_0}$ to both sides</p>
+<p>$\sum_{i=1}^{n}y_i - \hat{\beta_1}\sum_{i=1}^{n}x_i = n\hat{\beta_0}$</p>
+<p>Then dividing n by both sides</p>
+<p>$\frac{\sum_{i=1}^{n}y_i - \hat{\beta_1}\sum_{i=1}^{n}x_i}{n} = \hat{\beta_0}$</p>
+<p>We can make another simplification here. The sum of terms Y and X divided by the total number of samples is the mean. $\sum_{i=1}^{n}y_i$ becomes $\bar{y}$ and $\sum_{i=1}^{n}x_i$ becomes $\bar{x}$. This yields the final formula as presented by the authors.</p>
+<p>$\bar{y} - \hat{\beta_1}\bar{x} = \hat{\beta_0}$</p>
+<h3 id="the-minimizer-hatbeta_1">The minimizer $\hat{\beta_1}$</h3>
+<p>$f_{\beta_1}^{\prime}=-2 \sum_{i=1}^{n}x(y_i - \beta_0 - \beta_1 x_i)$ = 0</p>
+<p>divide out -2 from both sides.</p>
+<p>$\sum_{i=1}^{n}x(y_i - \beta_0 - \beta_1 x_i)$ = 0</p>
+<p>substitute $\hat{\beta_0}$ with the formula we solved for in the previous section.</p>
+<p>$\sum_{i=1}^{n}x(y_i - (\bar{y} - \hat{\beta_1}\bar{x})  - \beta_1 x_i)$ = 0</p>
+<p>distribute the negative sign.</p>
+<p>$\sum_{i=1}^{n}x(y_i - \bar{y} + \hat{\beta_1}\bar{x}  - \bar{\beta_1} x_i)$ = 0</p>
+<p>$\hat{\beta_1}$  can be factored out of its terms.</p>
+<p>$\sum_{i=1}^{n}x_i((y_i - \bar{y}) - \hat{\beta_1}(x_i  - \bar{x}))$ = 0</p>
+<p>x can be distributed in to the paraenthesis.</p>
+<p>$\sum_{i=1}^{n}x_i(y_i - \bar{y}) - \hat{\beta_1}x_i(x_i  - \bar{x})$ = 0</p>
+<p>The summation sign can be split between the two groups.</p>
+<p>$\sum_{i=1}^{n}x_i(y_i - \bar{y}) - \sum_{i=1}^{n}\hat{\beta_1}x_i(x_i  - \bar{x})$ = 0</p>
+<p>Since $\hat{\beta_1}$ is a constant, we can put it to the left of the summation sign.</p>
+<p>$\sum_{i=1}^{n}x_i(y_i - \bar{y}) - \hat{\beta_1}\sum_{i=1}^{n}x_i(x_i  - \bar{x})$ = 0</p>
+<p>Add the second summation term to both sides.</p>
+<p>$\sum_{i=1}^{n}x_i(y_i - \bar{y}) = \hat{\beta_1}\sum_{i=1}^{n}x_i(x_i  - \bar{x})$</p>
+<p>Divide the right side term by both sides to solve for B1.</p>
+<p>$\frac{\sum_{i=1}^{n}x_i(y_i - \bar{y})}{\sum_{i=1}^{n}x_i(x_i  - \bar{x})} = \hat{\beta_1}$</p>
+<p>we can show that the numerator $x_i(y_i - \hat{y}) = (x_i - \bar{x})(y_i-\bar{y})$:</p>
+<p>First, we expand the right hand side: $\sum_{i}^{n}x_i(y_i-\bar{y}) - \bar{x}(y_i-\bar{y})$</p>
+<p>and split the summation sign.</p>
+<p>$\sum x_i(y_i - \bar{y}) - \bar{x}\sum(y_i - \bar{y})$</p>
+<p>and because $\sum(y_i - \bar{y})=0$. We are left with $x_i(y_i - \bar{y})$.</p>
+<p>For the denominator, we can employ a trick to rewrite $x_i = (x_i - \bar{x}) + \bar{x}$</p>
+<p>$\sum_{i}^{n}x_i(x_i-\bar{x}) = \sum_{i}^{n}((x_i-\bar{x}) + \hat{x})(x_i - \bar{x})$</p>
+<p>and then distribute $x_i - \bar{x}$</p>
+<p>$((x - \bar{x}) + \bar{x})(x_i - \bar{x}) = (x_i - \bar{x})(x_i - \bar{x}) + \bar{x}(x_i - \bar{x})$</p>
+<p>which simplifies to</p>
+<p>$\sum(x_i - \bar{x})^2 + \bar{x}\sum(x_i-\bar{x})$</p>
+<p>and just like we saw in the numerator, $\sum(x_i - \bar{x}) = 0$</p>
+<p>leaving us with the formula presented in the book.</p>
+<p>$\frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n}(x_i- \bar{x})^2} = \hat{\beta_1}$</p>
+
+</content>
+<p>
+  
+  <a href="https://tscales.github.io/tags/machine-learning/">#Machine-Learning</a>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\[','\]']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+});
+</script>
+</footer>
+
+    
+</body>
+
+</html>

@@ -6,8 +6,22 @@
     <description>Recent content in Blog on Ty Scales</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Sep 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Oct 2026 00:00:28 -0700</lastBuildDate>
     <atom:link href="https://tscales.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ISLP Notes: Linear Regression</title>
+      <link>https://tscales.github.io/blog/machine-learning/islp/ch3-linear-regression/</link>
+      <pubDate>Sat, 10 Oct 2026 00:00:28 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/machine-learning/islp/ch3-linear-regression/</guid>
+      <description>&lt;h3 id=&#34;simple-linear-regression&#34;&gt;Simple Linear Regression&lt;/h3&gt;&#xA;&lt;p&gt;It&amp;rsquo;s really convenient when all data falls on a straight line. For any input X, you get an exact output Y. Here&amp;rsquo;s a plot for Y = 2 + 3X&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; np&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; plt&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;X &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;arange(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; X&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;scatter(X,Y, color&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;gray&amp;#39;&lt;/span&gt;, alpha&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.7&lt;/span&gt;, facecolors&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;none&amp;#39;&lt;/span&gt;, edgecolors&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;black&amp;#39;&lt;/span&gt;)&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;./straight-line.png&#34; alt=&#34;alt text&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;We are rarely so lucky. There is often some unaccountable variance we can&amp;rsquo;t explain. Here the variance is represented by the variable &lt;em&gt;e&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Finding the minimizers of RSS</title>
+      <link>https://tscales.github.io/blog/machine-learning/islp/ch3-minimizers/</link>
+      <pubDate>Sun, 27 Sep 2026 20:20:26 -0700</pubDate>
+      <guid>https://tscales.github.io/blog/machine-learning/islp/ch3-minimizers/</guid>
+      <description>&lt;p&gt;In chapter 3 of ISLP The authors introduce the minimizers of the residual sum of squares with respect to $\hat{B_0}$ and $\hat{B_1}$ for simple linear regression.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;The least squares approach chooses $\hat{B_0}$ and $\hat{B_1}$ to minimize the RSS. Using some calculus, one can show that the minimizers are&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;p&gt;$\hat{B_1} = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$&lt;/p&gt;&#xA;&lt;p&gt;$\hat{B_0} = \bar{y} - \hat{B_1}\bar{x}$&lt;/p&gt;&#xA;&lt;p&gt;I&amp;rsquo;m going to walk through how these functions are derived from the RSS.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Bishops of Krbava, 1185-1457</title>
       <link>https://tscales.github.io/blog/latin/illyricum-sacrum/volume4/bishops-of-krbava/</link>
